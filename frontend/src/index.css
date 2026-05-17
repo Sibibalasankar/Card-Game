@@ -133,3 +133,31 @@
   border-radius: inherit;
   animation: border-glow-pulse 2.5s infinite ease-in-out;
 }
+
+/* Rubber Stamp Effect */
+.rubber-stamp {
+  border: 4px double;
+  border-radius: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  padding: 8px 16px;
+  display: inline-block;
+}
+
+.stamp-red {
+  color: #ef4444;
+  border-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.05);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+  text-shadow: 0 0 4px rgba(239, 68, 68, 0.2);
+}
+
+.stamp-green {
+  color: #10b981;
+  border-color: #10b981;
+  background-color: rgba(16, 185, 129, 0.05);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+  text-shadow: 0 0 4px rgba(16, 185, 129, 0.2);
+}

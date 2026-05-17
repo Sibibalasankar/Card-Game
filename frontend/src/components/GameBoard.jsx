@@ -308,6 +308,87 @@ export const GameBoard = ({ onOpenSettings }) => {
     return AVATARS.find(a => a.id === avatarId)?.color || 'from-amber-500 to-yellow-600';
   };
 
+  // Animated floating celebration/failure particles
+  const FloatingGameOverParticles = ({ isVictory }) => {
+    const emojis = isVictory 
+      ? ['🏆', '👑', '🎉', '💰', '✨', '🤩', '💎']
+      : ['🐴', '💩', '😭', '🤡', '🪰', '🥕'];
+    
+    return (
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        {Array.from({ length: 20 }).map((_, i) => {
+          const emoji = emojis[i % emojis.length];
+          const randomX = `${Math.random() * 100}%`;
+          const randomDelay = Math.random() * 6;
+          const randomDuration = 5 + Math.random() * 6;
+          const randomScale = 0.5 + Math.random() * 1.2;
+
+          return (
+            <motion.div
+              key={i}
+              className="absolute text-2xl sm:text-3xl select-none"
+              style={{ left: randomX, bottom: '-10%' }}
+              initial={{ y: 0, opacity: 0, scale: randomScale }}
+              animate={{ 
+                y: '-120vh', 
+                opacity: [0, 0.8, 0.8, 0],
+                rotate: [0, 360 * (Math.random() > 0.5 ? 1 : -1)]
+              }}
+              transition={{
+                duration: randomDuration,
+                delay: randomDelay,
+                repeat: Infinity,
+                ease: 'linear'
+              }}
+            >
+              {emoji}
+            </motion.div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  // Braying comic donkey speech bubbles for loss screen
+  const DonkeySpeechBubbles = () => {
+    const bubbles = [
+      { text: "HEE-HAW! 🐴", top: "12%", left: "10%", delay: 0 },
+      { text: "WHO'S THE KAZHUTHAI? 🤡", top: "25%", right: "8%", delay: 1.5 },
+      { text: "GIVE ME CARROTS! 🥕", bottom: "15%", left: "12%", delay: 3 },
+      { text: "I LOVE HEE-HAW! 🐴", bottom: "28%", right: "10%", delay: 4.5 }
+    ];
+
+    return (
+      <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+        {bubbles.map((b, i) => (
+          <motion.div
+            key={i}
+            className="absolute bg-white text-slate-900 border border-slate-300 font-extrabold text-[9px] sm:text-xs uppercase tracking-wider rounded-2xl px-3 py-1.5 shadow-md flex items-center justify-center"
+            style={{
+              top: b.top,
+              left: b.left,
+              right: b.right,
+              bottom: b.bottom
+            }}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ 
+              scale: [0, 1.1, 1, 1, 0],
+              opacity: [0, 1, 1, 1, 0]
+            }}
+            transition={{
+              duration: 4,
+              delay: b.delay,
+              repeat: Infinity,
+              repeatDelay: 2
+            }}
+          >
+            {b.text}
+          </motion.div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <>
       {/* Dynamic Rotation Style Keyframes */}
@@ -770,66 +851,178 @@ export const GameBoard = ({ onOpenSettings }) => {
       </div>
 
       {/* ------------------------------------------------------------------ */}
-      {/* KAZHUTHAI DONKEY PUNISHMENT GAME OVER OVERLAY */}
+      {/* HILARIOUS KAZHUTHAI (DONKEY) GAME OVER OVERLAY */}
       {/* ------------------------------------------------------------------ */}
-      {gameOverData && (
-        <div className="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-6 animate-fade-in overflow-y-auto">
-          <div className="text-center space-y-6 max-w-md p-8 glass-card rounded-3xl border border-white/10 shadow-2xl relative">
-            <span className="text-[10px] font-black text-rose-400 uppercase tracking-widest border border-rose-500/30 rounded-full px-4 py-1.5 bg-rose-500/5">
-              🐴 MATCH OVER 🐴
-            </span>
+      {gameOverData && (() => {
+        const isPlayerDonkey = gameOverData.donkeyId === user?.id;
+        
+        return (
+          <div className="fixed inset-0 bg-slate-950/98 backdrop-blur-xl z-50 flex items-center justify-center p-4 overflow-y-auto select-none">
+            
+            {/* Custom Interactive Floating Particle Canvas */}
+            <FloatingGameOverParticles isVictory={!isPlayerDonkey} />
+            
+            {/* Funny Braying Speach Bubbles only if Loss */}
+            {isPlayerDonkey && <DonkeySpeechBubbles />}
 
-            {/* Donkey cartoon animation placeholder */}
-            <div className="flex flex-col items-center justify-center py-4 space-y-4">
-              <span className="text-8xl filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)] animate-bounce-slow">🐴</span>
-              <div className="font-outfit text-xs text-rose-400 font-extrabold tracking-widest uppercase border border-dashed border-rose-500/20 rounded-xl px-6 py-2.5 bg-rose-950/20">
-                {gameOverData.donkeyName === user?.username ? 'YOU LOST! YOU ARE THE KAZHUTHAI!' : `${gameOverData.donkeyName} IS THE KAZHUTHAI!`}
+            <motion.div 
+              initial={{ scale: 0.88, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              transition={{ type: 'spring', damping: 20, stiffness: 100 }}
+              className="text-center space-y-6 max-w-md w-full p-6 sm:p-8 glass-card rounded-[32px] border border-white/10 shadow-2xl relative z-20 overflow-visible"
+            >
+              {/* Tilted Funny Rubber Stamp Overlay */}
+              <div className="absolute -top-6 -right-6 z-30 select-none animate-bounce-slow">
+                {isPlayerDonkey ? (
+                  <span className="rubber-stamp stamp-red -rotate-12 font-black text-[10px] tracking-widest">
+                    Certified Kazhuthai 🐴
+                  </span>
+                ) : (
+                  <span className="rubber-stamp stamp-green rotate-12 font-black text-[10px] tracking-widest">
+                    Donkey Escapist 👑
+                  </span>
+                )}
               </div>
-            </div>
 
-            <p className="text-xs text-gray-400 leading-relaxed px-2">
-              {gameOverData.donkeyName === user?.username 
-                ? "Oh no! You ended up holding cards when everyone else got safe. You are the legendary South Indian Donkey for this match! You've lost 50 Coins."
-                : `Awesome! You escaped successfully. ${gameOverData.donkeyName} got cornered with cards and became the Donkey. You've earned XP and Coin rewards!`
-              }
-            </p>
-
-            {/* Final Match Stats */}
-            <div className="p-4 bg-white/5 border border-white/5 rounded-2xl text-left space-y-2 text-xs">
-              <div className="flex justify-between border-b border-white/5 pb-1">
-                <span className="text-gray-500 font-bold">Winner (1st Safe)</span>
-                <span className="text-emerald-400 font-black">
-                  {room.players.find(gp => gp.exitOrder === 1)?.name || 'Unknown'}
+              {/* Status Header Badge */}
+              <div className="flex justify-center">
+                <span className={`text-[9px] font-black uppercase tracking-widest rounded-full px-4 py-1.5 border ${
+                  isPlayerDonkey 
+                    ? 'text-rose-400 bg-rose-500/10 border-rose-500/20' 
+                    : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+                }`}>
+                  {isPlayerDonkey ? '🐴 ASS HEE-HAW PENALTY 🐴' : '🏆 HUMAN DIGNITY INTACT 🏆'}
                 </span>
               </div>
-              <div className="flex justify-between border-b border-white/5 pb-1">
-                <span className="text-gray-500 font-bold">Lobby Size</span>
-                <span className="text-white font-bold">{room.players.length} Players</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500 font-bold">Match Donkey</span>
-                <span className="text-rose-400 font-black">{gameOverData.donkeyName} 🐴</span>
-              </div>
-            </div>
 
-            {/* Actions */}
-            <div className="flex gap-4 pt-4">
-              <button
-                onClick={() => { sounds.playClick(); leaveRoom(); }}
-                className="flex-1 py-3.5 rounded-xl border border-white/10 hover:bg-white/5 text-gray-400 hover:text-white text-xs font-bold transition-all"
-              >
-                Return to Menu
-              </button>
-              <button
-                onClick={() => { sounds.playClick(); resetGameData(); }}
-                className="flex-1 btn-primary text-xs py-3.5"
-              >
-                Replay Lobby
-              </button>
-            </div>
+              {/* Central Cartoon Illustration Block */}
+              <div className="flex flex-col items-center justify-center py-2 space-y-3 relative">
+                
+                {isPlayerDonkey ? (
+                  // LOSS ILLUSTRATION: Avatar with Donkey Ears & Crying
+                  <div className="relative flex items-center justify-center">
+                    {/* Animated Donkey ears sitting on avatar */}
+                    <motion.span 
+                      animate={{ rotate: [-5, 5, -5] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                      className="absolute -top-12 -left-12 text-6xl transform origin-bottom-right pointer-events-none select-none"
+                    >
+                      👂🐴
+                    </motion.span>
+                    <motion.span 
+                      animate={{ rotate: [5, -5, 5] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                      className="absolute -top-12 -right-12 text-6xl transform scale-x-[-1] origin-bottom-left pointer-events-none select-none"
+                    >
+                      👂🐴
+                    </motion.span>
+                    
+                    <div className="w-24 h-24 rounded-full border-4 border-rose-500/40 p-1 bg-rose-950/20 shadow-xl overflow-hidden active-glow-ring flex items-center justify-center">
+                      <span className="text-6xl filter drop-shadow-md animate-pulse">😭</span>
+                    </div>
+                  </div>
+                ) : (
+                  // VICTORY ILLUSTRATION: Avatar with Bobbing Floating Crown
+                  <div className="relative flex items-center justify-center">
+                    {/* Bobbing floating crown above avatar */}
+                    <motion.span 
+                      animate={{ y: [-15, -8, -15] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                      className="absolute -top-12 text-5xl pointer-events-none select-none filter drop-shadow-[0_4px_8px_rgba(251,191,36,0.5)]"
+                    >
+                      👑
+                    </motion.span>
+                    
+                    <div className="w-24 h-24 rounded-full border-4 border-emerald-500/40 p-1 bg-emerald-950/20 shadow-xl overflow-hidden active-glow-ring flex items-center justify-center">
+                      <span className="text-6xl filter drop-shadow-md">😎</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Goofy Big Title Banner */}
+                <h3 className={`font-outfit text-base sm:text-lg font-black tracking-wide leading-tight ${
+                  isPlayerDonkey ? 'text-rose-400' : 'text-yellow-400'
+                }`}>
+                  {isPlayerDonkey 
+                    ? 'YOU ARE THE DESIGNATED DONKEY!' 
+                    : 'CONGRATULATIONS, ESCAPIST!'
+                  }
+                </h3>
+              </div>
+
+              {/* Goofy South Indian Donkey Humor Text */}
+              <p className="text-[11px] sm:text-xs text-gray-400 leading-relaxed px-4">
+                {isPlayerDonkey ? (
+                  <>
+                    Oh, the absolute embarrassment! You held onto your cards like they were valuable family heirlooms. 
+                    Now, you've officially been crowned the <strong className="text-rose-400">Kazhuthai (Donkey)</strong> of this lobby! 
+                    Please wear your virtual long ears and fluffy tail with pride! HEE-HAW! 🐴
+                  </>
+                ) : (
+                  <>
+                    Incredible! You successfully tricked, dumped, and discarded all your cards onto the other fools. 
+                    You walk away from this table with your human ears and dignity fully intact. Go celebrate in style! 🍻
+                  </>
+                )}
+              </p>
+
+              {/* Pulsing Coins Transaction Indicator */}
+              <div className="flex justify-center py-1">
+                <motion.span 
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className={`text-xs font-black tracking-widest px-6 py-2 rounded-2xl shadow-md border ${
+                    isPlayerDonkey 
+                      ? 'text-rose-400 bg-rose-500/5 border-rose-500/20 shadow-rose-950/20' 
+                      : 'text-yellow-400 bg-yellow-500/5 border-yellow-500/20 shadow-yellow-950/20'
+                  }`}
+                >
+                  {isPlayerDonkey ? '💸 LOSS PENALTY: -50 COINS 💸' : '💰 ESCAPIST REWARD: +150 COINS 💰'}
+                </motion.span>
+              </div>
+
+              {/* Match Details Stats */}
+              <div className="p-4 bg-white/5 border border-white/5 rounded-2xl text-left space-y-2 text-[10px] sm:text-xs">
+                <div className="flex justify-between border-b border-white/5 pb-1.5">
+                  <span className="text-gray-500 font-bold">Winner (1st Escape)</span>
+                  <span className="text-emerald-400 font-black">
+                    {room.players.find(gp => gp.exitOrder === 1)?.name || 'Unknown'} 🎉
+                  </span>
+                </div>
+                <div className="flex justify-between border-b border-white/5 pb-1.5">
+                  <span className="text-gray-500 font-bold">Lobby Size</span>
+                  <span className="text-white font-bold">{room.players.length} Active Players</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500 font-bold">Designated Donkey</span>
+                  <span className="text-rose-400 font-black">{gameOverData.donkeyName} 🐴</span>
+                </div>
+              </div>
+
+              {/* Game Over Actions Buttons */}
+              <div className="flex gap-4 pt-2">
+                <button
+                  onClick={() => { sounds.playClick(); leaveRoom(); }}
+                  className="flex-1 py-3 px-4 rounded-xl border border-white/10 hover:bg-white/5 text-gray-400 hover:text-white text-xs font-black tracking-wider transition-all"
+                >
+                  Lobby Exit
+                </button>
+                <button
+                  onClick={() => { sounds.playClick(); resetGameData(); }}
+                  className={`flex-1 text-xs py-3 px-4 rounded-xl font-black tracking-wider shadow-lg active:scale-95 transition-all ${
+                    isPlayerDonkey 
+                      ? 'bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 shadow-red-500/20' 
+                      : 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 shadow-emerald-500/20'
+                  }`}
+                >
+                  Replay Lobby
+                </button>
+              </div>
+
+            </motion.div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
     </div>
     </>
