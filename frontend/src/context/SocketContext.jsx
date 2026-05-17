@@ -109,6 +109,14 @@ export const SocketProvider = ({ children }) => {
         }, 4000);
       });
 
+      socket.on('match_suspended', (data) => {
+        console.warn('Match suspended event:', data.message);
+        setErrorNotification(`⚠️ ${data.message}`);
+        setTimeout(() => {
+          setErrorNotification(null);
+        }, 6000);
+      });
+
       socket.on('reconnect_success', ({ roomCode, status }) => {
         console.log(`Successfully reconnected to room ${roomCode}`);
       });
@@ -123,6 +131,7 @@ export const SocketProvider = ({ children }) => {
         socket.off('game_over');
         socket.off('emoji_received');
         socket.off('error_notification');
+        socket.off('match_suspended');
         socket.off('reconnect_success');
       }
     };

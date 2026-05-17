@@ -259,6 +259,41 @@ module.exports = (io) => {
       }
     };
 
+    // Helper: Check if lobby has enough active connected players, suspend if not
+    const checkLobbySuspension = (room) => {
+      if (!room || room.status !== 'playing') return;
+
+      const activeConnectedCount = room.players.filter(p => p.isConnected).length;
+      
+      // If less than 2 active players remain connected, suspend the game to prevent frozen states
+      if (activeConnectedCount < 2) {
+        console.log(`Lobby suspended in room ${room.code}: only ${activeConnectedCount} active player connected.`);
+        
+        if (room.timer) clearInterval(room.timer);
+        room.status = 'lobby';
+        room.gameState = null; // Clear state so they start clean
+        
+        // Reset ready statuses so they can ready up again when new players join
+        room.players.forEach(p => {
+          p.isReady = false;
+        });
+
+        const suspensionMsg = {
+          sender: 'System',
+          text: `Match suspended! Not enough connected players to continue. Returning to Lobby...`,
+          timestamp: Date.now()
+        };
+        room.chatMessages.push(suspensionMsg);
+
+        io.to(room.code).emit('chat_received', suspensionMsg);
+        io.to(room.code).emit('match_suspended', {
+          message: 'Not enough players connected to continue the match. Returning to lobby...'
+        });
+
+        broadcastRoomUpdate(room);
+      }
+    };
+
     // EVENT: Auth and Reconnect check
     socket.on('register_socket', async ({ userId, username, avatar }) => {
       if (!userId) return;
@@ -543,6 +578,7 @@ module.exports = (io) => {
         });
 
         broadcastRoomUpdate(room);
+        checkLobbySuspension(room);
       } else {
         // Remove from players array in lobby mode
         room.players = room.players.filter(p => p.id !== socketUser.id);
@@ -591,6 +627,7 @@ module.exports = (io) => {
             });
 
             broadcastRoomUpdate(room);
+            checkLobbySuspension(room);
           } else {
             // Remove completely from lobby
             room.players = room.players.filter(p => p.id !== socketUser.id);
