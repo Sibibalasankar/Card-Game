@@ -161,3 +161,76 @@
   box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
   text-shadow: 0 0 4px rgba(16, 185, 129, 0.2);
 }
+
+/* Mobile Landscape Compact Viewport Overrides */
+@media (max-height: 520px) {
+  /* Prevent scrolling on the entire page wrapper */
+  .min-h-screen.w-full.flex.flex-col.bg-poker-dark {
+    height: 100vh !important;
+    max-height: 100vh !important;
+    min-height: unset !important;
+    overflow: hidden !important;
+  }
+  
+  .w-full.min-h-\[90vh\].flex.flex-col {
+    min-height: unset !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+    padding: 0.5rem !important;
+    gap: 0.5rem !important;
+  }
+  
+  /* Restrict upper zone game table felt height */
+  .flex-1.flex.flex-col.relative.w-full.poker-table-bg {
+    aspect-ratio: unset !important;
+    max-height: 48vh !important;
+    min-height: unset !important;
+    flex: 1 1 0% !important;
+    border-radius: 1rem !important;
+  }
+
+  /* Shrink circular seating arrangement positions */
+  .absolute.-translate-x-1\/2.-translate-y-1\/2.flex.flex-col {
+    transform: translate(-50%, -50%) scale(0.65) !important;
+  }
+
+  /* Shrink miniature card back deck fan size */
+  .pointer-events-none.z-0.flex.items-center.justify-center {
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) scale(0.65) !important;
+  }
+
+  /* Compact the bottom player hand container */
+  .w-full.bg-black\/40.backdrop-blur-md.border {
+    padding: 0.25rem 0.5rem !important;
+    margin-top: 0px !important;
+    border-radius: 1rem !important;
+  }
+
+  /* Hide header on mobile landscape to save precious vertical space */
+  header.p-4.bg-black\/60 {
+    display: none !important;
+  }
+
+  /* Play card action button adjustments */
+  .btn-gold {
+    padding: 0.25rem 1rem !important;
+    font-size: 10px !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .active-turn-screen-glow {
+    border-width: 2px !important;
+  }
+
+  /* Miniaturize cards list spacing */
+  .h-36, .sm\:h-44, .md\:h-48 {
+    height: 85px !important;
+    margin-top: 0px !important;
+  }
+  
+  .flex-row.justify-center.items-end.px-4.pt-12.pb-4 {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.125rem !important;
+  }
+}
