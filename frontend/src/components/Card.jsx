@@ -22,7 +22,7 @@ const SUIT_MINI_COLORS = {
   Clubs: 'text-emerald-500'
 };
 
-export const Card = ({ card, onClick, disabled, isSelected, playable = true, customStyles = '' }) => {
+export const Card = ({ card, onClick, onDragPlay, disabled, isSelected, playable = true, customStyles = '' }) => {
   const { suit, rank } = card;
   const glyph = SUIT_GLYPHS[suit];
   const isRed = suit === 'Hearts' || suit === 'Diamonds';
@@ -34,6 +34,18 @@ export const Card = ({ card, onClick, disabled, isSelected, playable = true, cus
     <motion.div
       onClick={() => playable && !disabled && onClick && onClick(card)}
       layoutId={`card-${card.id}`}
+      drag={playable && !disabled && onDragPlay ? true : false}
+      dragSnapToOrigin={true}
+      dragElastic={0.6}
+      whileDrag={{ scale: 1.1, zIndex: 100, rotate: 5, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}
+      onDragEnd={(e, info) => {
+        if (playable && !disabled && onDragPlay) {
+          // If the card is dragged upwards significantly (tossed towards table)
+          if (info.offset.y < -50) {
+            onDragPlay(card);
+          }
+        }
+      }}
       whileHover={playable && !disabled ? { 
         y: isSelected ? -36 : -24, 
         rotate: 1.5,

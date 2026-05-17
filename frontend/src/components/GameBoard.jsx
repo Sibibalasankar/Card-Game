@@ -260,6 +260,15 @@ export const GameBoard = ({ onOpenSettings }) => {
     }
   };
 
+  const handleDragPlayCard = (card) => {
+    if (!isMyTurn) return;
+    if (isCardPlayable(card)) {
+      sounds.playCardPlay();
+      playCard(card.id);
+      setSelectedCard(null);
+    }
+  };
+
   const handleSendChat = (e) => {
     e.preventDefault();
     if (chatInput.trim()) {
@@ -797,6 +806,7 @@ export const GameBoard = ({ onOpenSettings }) => {
                     disabled={!playable}
                     isSelected={isSelected}
                     onClick={handleCardClick}
+                    onDragPlay={handleDragPlayCard}
                   />
                 </motion.div>
               );
