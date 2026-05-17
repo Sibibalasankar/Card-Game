@@ -63,14 +63,9 @@ export const Card = ({ card, onClick, disabled, isSelected, playable = true, cus
         <span className={`text-base md:text-lg ${SUIT_COLORS[suit]}`}>{glyph}</span>
       </div>
 
-      {/* Center Suit Graphic */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.06] select-none">
-        <span className="text-7xl md:text-8xl">{glyph}</span>
-      </div>
-      
-      {/* Dynamic Watermark Center Mini (Clean Vector) */}
-      <div className="flex items-center justify-center leading-none">
-        <span className={`text-3xl md:text-4xl filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)] ${SUIT_COLORS[suit]}`}>
+      {/* Center Big Suit Graphic */}
+      <div className="flex-1 flex items-center justify-center pointer-events-none select-none my-1">
+        <span className={`text-5xl md:text-6xl filter drop-shadow-[0_3px_5px_rgba(0,0,0,0.12)] ${SUIT_COLORS[suit]}`}>
           {glyph}
         </span>
       </div>
