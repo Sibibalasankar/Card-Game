@@ -415,9 +415,9 @@ export const GameBoard = ({ onOpenSettings }) => {
               )}
             </div>
 
-            {/* Turn countdown display */}
+            {/* Turn countdown display (Stacked elegantly under the Opened Suit banner) */}
             {timerRemaining !== null && !roundResultAlert && (
-              <div className="absolute bottom-2 sm:bottom-4 flex items-center gap-1 bg-black/40 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-bold text-yellow-400">
+              <div className="absolute top-10 sm:top-14 flex items-center gap-1 bg-black/60 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-bold text-yellow-400 border border-white/5 shadow-md">
                 <Clock size={10} className={timerRemaining <= 5 ? 'text-red-500 animate-pulse' : ''} />
                 <span>Timer: {timerRemaining}s</span>
               </div>
