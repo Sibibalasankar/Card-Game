@@ -608,53 +608,50 @@ export const GameBoard = ({ onOpenSettings }) => {
           </div>
         )}
 
-        {/* Fanned Player hand area */}
-        <div className="w-full max-w-3xl flex justify-center items-center relative h-48 pointer-events-auto mt-4 overflow-visible">
-          {hand.map((card, idx) => {
-            const playable = isCardPlayable(card);
-            const isSelected = selectedCard?.id === card.id;
+        {/* Horizontal Overlapping Player Hand list */}
+        <div className="w-full flex justify-center items-end relative h-48 pointer-events-auto mt-4 overflow-visible">
+          <div className="flex flex-row justify-center items-end px-8 py-4 max-w-full overflow-x-auto overflow-y-visible pb-8 select-none">
+            {hand.map((card, idx) => {
+              const playable = isCardPlayable(card);
+              const isSelected = selectedCard?.id === card.id;
 
-            const cardCount = hand.length;
-            const centerIdx = (cardCount - 1) / 2;
-            const offset = idx - centerIdx;
+              const cardCount = hand.length;
+              // Dynamic left margin overlap: higher card count means more overlap to save space elegantly
+              const overlapStyle = idx > 0 ? { 
+                marginLeft: cardCount > 15 
+                  ? '-64px' 
+                  : cardCount > 12 
+                    ? '-52px' 
+                    : cardCount > 8 
+                      ? '-40px' 
+                      : '-24px' 
+              } : {};
 
-            const angleStep = cardCount > 12 ? 2.2 : cardCount > 8 ? 3.0 : 4.0;
-            const yStep = cardCount > 12 ? 1.0 : cardCount > 8 ? 1.5 : 2.2;
-            const xSpread = cardCount > 12 ? -15 : cardCount > 8 ? -20 : -26;
+              return (
+                <div 
+                  key={card.id} 
+                  className="relative transition-all duration-300 origin-bottom hover:z-50 shrink-0"
+                  style={{
+                    ...overlapStyle,
+                    zIndex: isSelected ? 40 : idx + 5
+                  }}
+                >
+                  <Card
+                    card={card}
+                    disabled={!playable}
+                    isSelected={isSelected}
+                    onClick={handleCardClick}
+                  />
+                </div>
+              );
+            })}
 
-            const rotation = offset * angleStep;
-            const translateY = Math.abs(offset) * yStep;
-            const translateX = offset * xSpread;
-
-            const transformStr = isSelected
-              ? `rotate(0deg) translate(${translateX}px, -28px) scale(1.1)`
-              : `rotate(${rotation}deg) translate(${translateX}px, ${translateY}px)`;
-
-            return (
-              <div 
-                key={card.id} 
-                className="absolute origin-bottom transition-all duration-300 hover:z-50"
-                style={{
-                  transform: transformStr,
-                  zIndex: isSelected ? 40 : idx + 5
-                }}
-              >
-                <Card
-                  card={card}
-                  disabled={!playable}
-                  isSelected={isSelected}
-                  onClick={handleCardClick}
-                  customStyles="hover:-translate-y-6 hover:scale-105 duration-200"
-                />
+            {hand.length === 0 && (
+              <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest text-center shadow-lg">
+                🎉 YOU ARE SAFE! WAITING FOR MATCH OUTCOME...
               </div>
-            );
-          })}
-
-          {hand.length === 0 && (
-            <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest text-center shadow-lg">
-              🎉 YOU ARE SAFE! WAITING FOR MATCH OUTCOME...
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
