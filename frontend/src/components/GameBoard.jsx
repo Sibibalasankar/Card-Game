@@ -815,8 +815,9 @@ export const GameBoard = ({ onOpenSettings }) => {
                   key={card.id} 
                   value={card}
                   layout
-                  drag={true} // Override axis="x" to allow free vertical tossing!
-                  dragElastic={0.6}
+                  drag={true}
+                  dragSnapToOrigin={true}
+                  dragElastic={1}
                   whileDrag={{ scale: 1.1, zIndex: 100, rotate: 5, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}
                   onDragEnd={(e, info) => {
                     // Check if the user tossed the card upwards to the table (play action)
