@@ -235,10 +235,9 @@ export const GameBoard = ({ onOpenSettings }) => {
           {/* CIRCULAR ARRANGEMENT OF PLAYERS */}
           {rotatedPlayers.map((player, idx) => {
             const coords = positionSchema[idx] || { left: '50%', top: '50%' };
-            const gameStatePlayer = gameState.players.find(gp => gp.id === player.id);
             const isActive = gameState.turnOrder[gameState.activePlayerIndex] === player.id;
-            const isSafe = gameStatePlayer?.isSafe || false;
-            const cardCount = gameStatePlayer?.hand.length || 0;
+            const isSafe = player.isSafe || false;
+            const cardCount = player.cardCount || 0;
             const isSelf = player.id === user?.id;
 
             // Float emojis over this player
@@ -534,7 +533,7 @@ export const GameBoard = ({ onOpenSettings }) => {
               <div className="flex justify-between border-b border-white/5 pb-1">
                 <span className="text-gray-500 font-bold">Winner (1st Safe)</span>
                 <span className="text-emerald-400 font-black">
-                  {room.gameState.players.find(gp => gp.exitOrder === 1)?.name || 'Unknown'}
+                  {room.players.find(gp => gp.exitOrder === 1)?.name || 'Unknown'}
                 </span>
               </div>
               <div className="flex justify-between border-b border-white/5 pb-1">
