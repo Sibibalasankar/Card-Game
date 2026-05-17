@@ -50,7 +50,7 @@ export const Card = ({ card, onClick, onDragPlay, disabled, isSelected, playable
       }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
       className={`
-        relative w-16 h-24 sm:w-20 sm:h-30 md:w-24 md:h-36 lg:w-28 lg:h-40 rounded-xl sm:rounded-2xl bg-white text-slate-800 shadow-xl select-none cursor-pointer border border-slate-200/50 card-container overflow-hidden
+        relative w-16 h-28 sm:w-20 sm:h-32 md:w-24 md:h-40 lg:w-28 lg:h-44 rounded-xl sm:rounded-2xl bg-white text-slate-800 shadow-xl select-none cursor-pointer border border-slate-200/50 card-container overflow-hidden
         ${disabled ? 'opacity-40 cursor-not-allowed contrast-75' : ''}
         ${!playable ? 'cursor-default pointer-events-none' : ''}
         ${isSelected ? 'border-2 border-indigo-500 ring-4 ring-indigo-500/20' : ''}
