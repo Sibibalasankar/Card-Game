@@ -788,7 +788,7 @@ export const GameBoard = ({ onOpenSettings }) => {
 
         {/* Horizontal Overlapping Player Hand list (Scroll-Free Fluid Margins) */}
         <div className="w-full flex justify-center items-end relative h-36 sm:h-44 md:h-48 pointer-events-auto mt-2 overflow-visible">
-          <Reorder.Group axis="x" values={displayHand} onReorder={handleReorder} className="flex flex-row justify-center items-end px-4 pt-12 pb-4 max-w-full overflow-hidden overflow-y-visible select-none">
+          <Reorder.Group axis="x" values={displayHand} onReorder={handleReorder} className="flex flex-row justify-center items-end px-4 pt-12 pb-4 max-w-full overflow-visible select-none">
             {displayHand.map((card, idx) => {
               const playable = isCardPlayable(card);
               const isSelected = selectedCard?.id === card.id;
