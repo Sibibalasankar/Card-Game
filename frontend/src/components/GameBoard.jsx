@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { useGameSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 import { Card } from './Card';
@@ -123,6 +124,29 @@ export const GameBoard = ({ onOpenSettings }) => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isPortrait, setIsPortrait] = useState(window.innerHeight > window.innerWidth);
+  const [sortBy, setSortBy] = useState('suit'); // 'suit' | 'rank'
+
+  const getSortedHand = () => {
+    const suitOrder = { 'Spades': 0, 'Hearts': 1, 'Diamonds': 2, 'Clubs': 3 };
+    const rankValue = { 
+      '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
+      'J': 11, 'Q': 12, 'K': 13, 'A': 14 
+    };
+
+    return [...hand].sort((a, b) => {
+      if (sortBy === 'suit') {
+        if (suitOrder[a.suit] !== suitOrder[b.suit]) {
+          return suitOrder[a.suit] - suitOrder[b.suit];
+        }
+        return rankValue[b.rank] - rankValue[a.rank];
+      } else {
+        if (rankValue[a.rank] !== rankValue[b.rank]) {
+          return rankValue[b.rank] - rankValue[a.rank];
+        }
+        return suitOrder[a.suit] - suitOrder[b.suit];
+      }
+    });
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -327,6 +351,11 @@ export const GameBoard = ({ onOpenSettings }) => {
         
         {/* MAIN GAME ZONE */}
         <div className="flex-1 flex flex-col relative w-full aspect-[4/3] md:aspect-[16/10] max-h-[60vh] min-h-[380px] md:min-h-[460px] rounded-3xl border border-poker-border shadow-2xl poker-table-bg overflow-visible">
+          
+          {/* Pulsing screen border glow when active turn */}
+          {isMyTurn && !roundResultAlert && (
+            <div className="active-turn-screen-glow rounded-3xl" />
+          )}
           
           {/* FLOATING HEADER ACTIONS PANEL */}
           <div className="absolute top-4 left-4 right-4 z-40 flex items-center justify-between pointer-events-auto">
@@ -648,17 +677,50 @@ export const GameBoard = ({ onOpenSettings }) => {
           </button>
         )}
 
-        {/* Turn alerts */}
-        {isMyTurn && !selectedCard && !roundResultAlert && (
-          <div className="mb-4 bg-indigo-600 text-white font-extrabold text-[10px] uppercase tracking-wider rounded-full px-4 py-1.5 border border-indigo-400 shadow-lg pointer-events-auto animate-pulse">
-            ⚡ IT IS YOUR TURN! CHOOSE A VALID CARD ⚡
-          </div>
-        )}
+        {/* Active Hand Utility Bar */}
+        <div className="w-full max-w-lg px-4 flex justify-between items-center mb-4 pointer-events-auto z-20">
+          {/* Turn Alert */}
+          {isMyTurn && !roundResultAlert ? (
+            <div className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black text-[9px] uppercase tracking-widest rounded-full px-3 py-1 shadow-md animate-pulse">
+              <Sparkles size={10} /> YOUR TURN TO PLAY!
+            </div>
+          ) : (
+            <div className="text-[9px] font-black text-gray-500 uppercase tracking-widest">
+              Your Cards ({hand.length})
+            </div>
+          )}
+
+          {/* Sorting Toggles */}
+          {hand.length > 0 && (
+            <div className="flex items-center gap-2 bg-black/40 border border-white/5 rounded-full p-0.5">
+              <button
+                onClick={() => { sounds.playClick(); setSortBy('suit'); }}
+                className={`px-3 py-1 rounded-full font-black text-[8px] uppercase tracking-widest transition-all ${
+                  sortBy === 'suit'
+                    ? 'bg-indigo-600 text-white shadow-md'
+                    : 'text-gray-400 hover:text-white font-bold'
+                }`}
+              >
+                Sort by Suit
+              </button>
+              <button
+                onClick={() => { sounds.playClick(); setSortBy('rank'); }}
+                className={`px-3 py-1 rounded-full font-black text-[8px] uppercase tracking-widest transition-all ${
+                  sortBy === 'rank'
+                    ? 'bg-indigo-600 text-white shadow-md'
+                    : 'text-gray-400 hover:text-white font-bold'
+                }`}
+              >
+                Sort by Rank
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Horizontal Overlapping Player Hand list (Scroll-Free Fluid Margins) */}
         <div className="w-full flex justify-center items-end relative h-36 sm:h-44 md:h-48 pointer-events-auto mt-2 overflow-visible">
           <div className="flex flex-row justify-center items-end px-4 pt-12 pb-4 max-w-full overflow-hidden overflow-y-visible select-none">
-            {hand.map((card, idx) => {
+            {getSortedHand().map((card, idx) => {
               const playable = isCardPlayable(card);
               const isSelected = selectedCard?.id === card.id;
 
@@ -679,8 +741,9 @@ export const GameBoard = ({ onOpenSettings }) => {
               };
 
               return (
-                <div 
+                <motion.div 
                   key={card.id} 
+                  layout
                   className="relative transition-all duration-300 origin-bottom hover:z-50 shrink-0"
                   style={{
                     ...getDynamicOverlap(),
@@ -693,7 +756,7 @@ export const GameBoard = ({ onOpenSettings }) => {
                     isSelected={isSelected}
                     onClick={handleCardClick}
                   />
-                </div>
+                </motion.div>
               );
             })}
 
