@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { useGameSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 import { Card } from './Card';
@@ -125,27 +125,39 @@ export const GameBoard = ({ onOpenSettings }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [sortBy, setSortBy] = useState('suit'); // 'suit' | 'rank'
 
-  const getSortedHand = () => {
-    const suitOrder = { 'Spades': 0, 'Hearts': 1, 'Diamonds': 2, 'Clubs': 3 };
-    const rankValue = { 
-      '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
-      'J': 11, 'Q': 12, 'K': 13, 'A': 14 
-    };
+  const [displayHand, setDisplayHand] = useState([]);
 
-    return [...hand].sort((a, b) => {
-      if (sortBy === 'suit') {
-        if (suitOrder[a.suit] !== suitOrder[b.suit]) {
+  useEffect(() => {
+    if (sortBy !== 'custom') {
+      const suitOrder = { 'Spades': 0, 'Hearts': 1, 'Diamonds': 2, 'Clubs': 3 };
+      const rankValue = { 
+        '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
+        'J': 11, 'Q': 12, 'K': 13, 'A': 14 
+      };
+
+      const sorted = [...hand].sort((a, b) => {
+        if (sortBy === 'suit') {
+          if (suitOrder[a.suit] !== suitOrder[b.suit]) {
+            return suitOrder[a.suit] - suitOrder[b.suit];
+          }
+          return rankValue[b.rank] - rankValue[a.rank];
+        } else {
+          if (rankValue[a.rank] !== rankValue[b.rank]) {
+            return rankValue[b.rank] - rankValue[a.rank];
+          }
           return suitOrder[a.suit] - suitOrder[b.suit];
         }
-        return rankValue[b.rank] - rankValue[a.rank];
-      } else {
-        if (rankValue[a.rank] !== rankValue[b.rank]) {
-          return rankValue[b.rank] - rankValue[a.rank];
-        }
-        return suitOrder[a.suit] - suitOrder[b.suit];
-      }
-    });
-  };
+      });
+      setDisplayHand(sorted);
+    } else {
+      // Custom reorder logic: preserve order, but remove played cards & append new ones
+      const handIds = new Set(hand.map(c => c.id));
+      const filteredDisplay = displayHand.filter(c => handIds.has(c.id));
+      const displayIds = new Set(filteredDisplay.map(c => c.id));
+      const missingCards = hand.filter(c => !displayIds.has(c.id));
+      setDisplayHand([...filteredDisplay, ...missingCards]);
+    }
+  }, [hand, sortBy]);
 
 
 
@@ -267,6 +279,12 @@ export const GameBoard = ({ onOpenSettings }) => {
       playCard(card.id);
       setSelectedCard(null);
     }
+  };
+
+  const handleReorder = (newOrder) => {
+    sounds.playClick();
+    setSortBy('custom');
+    setDisplayHand(newOrder);
   };
 
   const handleSendChat = (e) => {
@@ -770,8 +788,8 @@ export const GameBoard = ({ onOpenSettings }) => {
 
         {/* Horizontal Overlapping Player Hand list (Scroll-Free Fluid Margins) */}
         <div className="w-full flex justify-center items-end relative h-36 sm:h-44 md:h-48 pointer-events-auto mt-2 overflow-visible">
-          <div className="flex flex-row justify-center items-end px-4 pt-12 pb-4 max-w-full overflow-hidden overflow-y-visible select-none">
-            {getSortedHand().map((card, idx) => {
+          <Reorder.Group axis="x" values={displayHand} onReorder={handleReorder} className="flex flex-row justify-center items-end px-4 pt-12 pb-4 max-w-full overflow-hidden overflow-y-visible select-none">
+            {displayHand.map((card, idx) => {
               const playable = isCardPlayable(card);
               const isSelected = selectedCard?.id === card.id;
 
@@ -792,10 +810,20 @@ export const GameBoard = ({ onOpenSettings }) => {
               };
 
               return (
-                <motion.div 
+                <Reorder.Item 
                   key={card.id} 
+                  value={card}
                   layout
-                  className="relative transition-all duration-300 origin-bottom hover:z-50 shrink-0"
+                  drag={true} // Override axis="x" to allow free vertical tossing!
+                  dragElastic={0.6}
+                  whileDrag={{ scale: 1.1, zIndex: 100, rotate: 5, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}
+                  onDragEnd={(e, info) => {
+                    // Check if the user tossed the card upwards to the table (play action)
+                    if (playable && info.offset.y < -50) {
+                      handleDragPlayCard(card);
+                    }
+                  }}
+                  className="relative transition-all duration-300 origin-bottom hover:z-50 shrink-0 cursor-grab active:cursor-grabbing"
                   style={{
                     ...getDynamicOverlap(),
                     zIndex: isSelected ? 40 : idx + 5
@@ -808,7 +836,7 @@ export const GameBoard = ({ onOpenSettings }) => {
                     onClick={handleCardClick}
                     onDragPlay={handleDragPlayCard}
                   />
-                </motion.div>
+                </Reorder.Item>
               );
             })}
 
@@ -817,7 +845,7 @@ export const GameBoard = ({ onOpenSettings }) => {
                 🎉 YOU ARE SAFE! WAITING FOR MATCH OUTCOME...
               </div>
             )}
-          </div>
+          </Reorder.Group>
         </div>
       </div>
 
