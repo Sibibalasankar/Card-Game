@@ -44,7 +44,7 @@ export const MainMenu = () => {
   // RENDER PATH 1: GAME BOARD TABLE (ACTIVE MATCHPLAYING)
   if (room && room.status === 'playing') {
     return (
-      <div className="min-h-screen w-full flex flex-col bg-poker-dark text-white virtual-landscape-lock">
+      <div className="min-h-screen w-full flex flex-col bg-poker-dark text-white">
         {/* Authoritative Game Header */}
         <header className="p-4 bg-black/60 border-b border-white/5 flex items-center justify-between z-40 select-none">
           <div className="flex items-center gap-3">
