@@ -47,7 +47,7 @@ export const Card = ({ card, onClick, disabled, isSelected, playable = true, cus
       animate={{ scale: 1, opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
       className={`
-        relative w-24 h-36 md:w-28 md:h-40 rounded-2xl bg-white text-slate-800 shadow-xl select-none cursor-pointer border border-slate-200/50 card-container overflow-hidden
+        relative w-16 h-24 sm:w-20 sm:h-30 md:w-24 md:h-36 lg:w-28 lg:h-40 rounded-xl sm:rounded-2xl bg-white text-slate-800 shadow-xl select-none cursor-pointer border border-slate-200/50 card-container overflow-hidden
         ${disabled ? 'opacity-40 cursor-not-allowed contrast-75' : ''}
         ${!playable ? 'cursor-default pointer-events-none' : ''}
         ${isSelected ? 'border-2 border-indigo-500 ring-4 ring-indigo-500/20 -translate-y-6' : ''}
@@ -58,22 +58,22 @@ export const Card = ({ card, onClick, disabled, isSelected, playable = true, cus
       }}
     >
       {/* Top Left Indicator */}
-      <div className="absolute top-2.5 left-3 flex flex-col items-center leading-none">
-        <span className="text-lg md:text-xl font-black font-outfit text-slate-900">{displayRank}</span>
-        <span className={`text-xs md:text-sm ${SUIT_COLORS[suit]} mt-0.5`}>{glyph}</span>
+      <div className="absolute top-1 sm:top-2 left-1.5 sm:left-2.5 flex flex-col items-center leading-none">
+        <span className="text-xs sm:text-sm md:text-lg lg:text-xl font-black font-outfit text-slate-900">{displayRank}</span>
+        <span className={`text-[9px] sm:text-xs md:text-sm ${SUIT_COLORS[suit]} mt-0.2 sm:mt-0.5`}>{glyph}</span>
       </div>
 
       {/* Center Big Suit Graphic */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-        <span className={`text-5xl md:text-6xl filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)] ${SUIT_COLORS[suit]}`}>
+        <span className={`text-2xl sm:text-4xl md:text-5xl lg:text-6xl filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)] ${SUIT_COLORS[suit]}`}>
           {glyph}
         </span>
       </div>
 
       {/* Bottom Right Indicator */}
-      <div className="absolute bottom-2.5 right-3 flex flex-col items-center leading-none rotate-180">
-        <span className="text-lg md:text-xl font-black font-outfit text-slate-900">{displayRank}</span>
-        <span className={`text-xs md:text-sm ${SUIT_COLORS[suit]} mt-0.5`}>{glyph}</span>
+      <div className="absolute bottom-1 sm:bottom-2 right-1.5 sm:right-2.5 flex flex-col items-center leading-none rotate-180">
+        <span className="text-xs sm:text-sm md:text-lg lg:text-xl font-black font-outfit text-slate-900">{displayRank}</span>
+        <span className={`text-[9px] sm:text-xs md:text-sm ${SUIT_COLORS[suit]} mt-0.2 sm:mt-0.5`}>{glyph}</span>
       </div>
 
       {/* Highlight glow ring for special first card Ace of Spades */}

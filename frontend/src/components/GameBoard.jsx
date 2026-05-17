@@ -122,6 +122,18 @@ export const GameBoard = ({ onOpenSettings }) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isPortrait, setIsPortrait] = useState(window.innerHeight > window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsPortrait(window.innerHeight > window.innerWidth);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const isMobile = typeof window !== 'undefined' && 
+    (/Mobi|Android|iPhone|iPad|Macintosh/i.test(navigator.userAgent) || window.innerWidth < 768);
   
   const chatEndRef = useRef(null);
 
@@ -176,7 +188,7 @@ export const GameBoard = ({ onOpenSettings }) => {
 
   const getPlayedCardPosition = (playedCardPlayerId) => {
     const playerIdx = rotatedPlayers.findIndex(p => p.id === playedCardPlayerId);
-    if (playerIdx === -1) return { left: '50%', top: '50%', transform: 'translate(-50%, -50%) scale(0.85)' };
+    if (playerIdx === -1) return { left: '50%', top: '50%', transform: 'translate(-50%, -50%) scale(0.55)' };
 
     const coords = positionSchema[playerIdx] || { left: '50%', top: '80%' };
     const leftVal = parseFloat(coords.left);
@@ -184,36 +196,36 @@ export const GameBoard = ({ onOpenSettings }) => {
 
     if (playerIdx === 0) {
       return {
-        bottom: '8%',
+        bottom: '22%',
         left: '50%',
-        transform: 'translateX(-50%) scale(0.85)'
+        transform: 'translateX(-50%) scale(0.55)'
       };
     }
 
     if (leftVal < 35) {
       return {
-        left: '8%',
+        left: '26%',
         top: '50%',
-        transform: 'translateY(-50%) scale(0.85)'
+        transform: 'translateY(-50%) scale(0.55)'
       };
     } else if (leftVal > 65) {
       return {
-        right: '8%',
+        right: '26%',
         top: '50%',
-        transform: 'translateY(-50%) scale(0.85)'
+        transform: 'translateY(-50%) scale(0.55)'
       };
     } else if (topVal < 30) {
       return {
-        top: '8%',
+        top: '22%',
         left: '50%',
-        transform: 'translateX(-50%) scale(0.85)'
+        transform: 'translateX(-50%) scale(0.55)'
       };
     }
 
     return {
       left: '50%',
       top: '50%',
-      transform: 'translate(-50%, -50%) scale(0.85)'
+      transform: 'translate(-50%, -50%) scale(0.55)'
     };
   };
 
@@ -273,7 +285,42 @@ export const GameBoard = ({ onOpenSettings }) => {
   };
 
   return (
-    <div className="w-full min-h-[90vh] flex flex-col gap-6 p-4 animate-fade-in select-none max-w-7xl mx-auto overflow-y-auto">
+    <>
+      {/* Dynamic Rotation Style Keyframes */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes rotatePhone {
+          0%, 100% { transform: rotate(0deg); }
+          50% { transform: rotate(90deg); }
+        }
+        .animate-rotate-phone {
+          animation: rotatePhone 2.5s ease-in-out infinite;
+        }
+      `}} />
+
+      {/* Immersive Mobile Rotate to Landscape Overlay */}
+      {isMobile && isPortrait && (
+        <div className="fixed inset-0 bg-slate-950 z-[99999] flex flex-col items-center justify-center p-6 text-center animate-fade-in select-none">
+          <div className="relative flex items-center justify-center w-24 h-24 mb-6">
+            {/* Spinning glowing phone icon */}
+            <div className="absolute inset-0 rounded-full bg-indigo-500/10 animate-ping duration-1000" />
+            <div className="w-16 h-28 border-4 border-slate-700 rounded-[20px] bg-slate-900 flex items-center justify-center animate-rotate-phone shadow-2xl relative">
+              {/* Home button & speaker lines */}
+              <div className="absolute top-1.5 w-6 h-1 bg-slate-700 rounded-full" />
+              <div className="absolute bottom-1.5 w-2 h-2 rounded-full border border-slate-700 bg-slate-800" />
+              {/* Internal screen glyph */}
+              <span className="text-xl">🔄</span>
+            </div>
+          </div>
+          <h2 className="text-xl font-black text-white font-outfit uppercase tracking-wider mb-2">
+            Rotate Your Device
+          </h2>
+          <p className="text-xs text-gray-400 max-w-xs leading-relaxed font-semibold">
+            Kazhuthai requires Landscape Mode. Turn your device horizontally for the optimal multiplayer card-board experience!
+          </p>
+        </div>
+      )}
+
+      <div className="w-full min-h-[90vh] flex flex-col gap-6 p-4 animate-fade-in select-none max-w-7xl mx-auto overflow-y-auto">
       
       {/* UPPER ZONE: Table + Sidebar */}
       <div className="w-full flex flex-col lg:flex-row gap-6 items-stretch">
@@ -326,18 +373,18 @@ export const GameBoard = ({ onOpenSettings }) => {
           </div>
         </div> {/* CLOSES THE GREEN RADIAL BACKGROUND felt */}
 
-          {/* TABLE CENTER PILE / DROP ZONE */}
-          <div className="w-60 h-60 md:w-72 md:h-72 rounded-full border border-dashed border-emerald-500/30 flex flex-col items-center justify-center relative p-6 bg-emerald-950/40 shadow-inner">
+          {/* TABLE CENTER PILE / DROP ZONE (100% Mathematically Centered) */}
+          <div className="w-48 h-48 sm:w-60 sm:h-60 md:w-72 md:h-72 rounded-full border border-dashed border-emerald-500/30 flex flex-col items-center justify-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 sm:p-6 bg-emerald-950/40 shadow-inner z-10">
             
             {/* Opened Suit banner */}
             {gameState.openedSuit ? (
-              <div className="absolute top-4 px-3 py-1 bg-black/60 rounded-full border border-white/5 text-[10px] font-black tracking-widest text-indigo-300 flex items-center gap-1 uppercase">
+              <div className="absolute top-2 sm:top-4 px-3 py-0.5 sm:py-1 bg-black/60 rounded-full border border-white/5 text-[8px] sm:text-[10px] font-black tracking-widest text-indigo-300 flex items-center gap-1 uppercase">
                 <span>Opened Suit:</span>
-                <span className="text-sm">{gameState.openedSuit === 'Spades' ? '♠' : gameState.openedSuit === 'Hearts' ? '♥' : gameState.openedSuit === 'Diamonds' ? '♦' : '♣'}</span>
-                <span>({gameState.openedSuit})</span>
+                <span className="text-xs sm:text-sm">{gameState.openedSuit === 'Spades' ? '♠' : gameState.openedSuit === 'Hearts' ? '♥' : gameState.openedSuit === 'Diamonds' ? '♦' : '♣'}</span>
+                <span className="hidden sm:inline">({gameState.openedSuit})</span>
               </div>
             ) : (
-              <div className="text-[10px] font-bold text-gray-500/80 uppercase tracking-widest text-center">
+              <div className="text-[8px] sm:text-[10px] font-bold text-gray-500/80 uppercase tracking-widest text-center">
                 Waiting for Lead Play
               </div>
             )}
@@ -349,12 +396,12 @@ export const GameBoard = ({ onOpenSettings }) => {
                 return (
                   <div 
                     key={pCard.card.id}
-                    className="absolute shadow-2xl transition-all duration-300 z-10"
+                    className="absolute shadow-2xl transition-all duration-300 z-10 animate-fade-in"
                     style={cardPosStyle}
                   >
                     <Card card={pCard.card} playable={false} />
                     {/* Small name bubble on played card */}
-                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-indigo-950 border border-indigo-500/30 text-white font-bold text-[8px] tracking-wide rounded-full px-2 py-0.5 shadow-md whitespace-nowrap">
+                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-indigo-950 border border-indigo-500/30 text-white font-bold text-[7px] sm:text-[8px] tracking-wide rounded-full px-1.5 sm:px-2 py-0.5 shadow-md whitespace-nowrap">
                       {pCard.playerName}
                     </div>
                   </div>
@@ -362,7 +409,7 @@ export const GameBoard = ({ onOpenSettings }) => {
               })}
 
               {gameState.playedCards.length === 0 && (
-                <div className="text-center text-gray-600 font-outfit text-xs font-bold leading-relaxed px-4 opacity-50">
+                <div className="text-center text-gray-600 font-outfit text-[9px] sm:text-xs font-bold leading-relaxed px-4 opacity-50">
                   {gameState.isFirstRound ? 'Play Ace of Spades (♠A) to Start Game' : 'Lead card determines the suit for this trick'}
                 </div>
               )}
@@ -370,8 +417,8 @@ export const GameBoard = ({ onOpenSettings }) => {
 
             {/* Turn countdown display */}
             {timerRemaining !== null && !roundResultAlert && (
-              <div className="absolute bottom-4 flex items-center gap-1 bg-black/40 px-3 py-1 rounded-full text-[10px] font-bold text-yellow-400">
-                <Clock size={12} className={timerRemaining <= 5 ? 'text-red-500 animate-pulse' : ''} />
+              <div className="absolute bottom-2 sm:bottom-4 flex items-center gap-1 bg-black/40 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-bold text-yellow-400">
+                <Clock size={10} className={timerRemaining <= 5 ? 'text-red-500 animate-pulse' : ''} />
                 <span>Timer: {timerRemaining}s</span>
               </div>
             )}
@@ -608,31 +655,35 @@ export const GameBoard = ({ onOpenSettings }) => {
           </div>
         )}
 
-        {/* Horizontal Overlapping Player Hand list */}
-        <div className="w-full flex justify-center items-end relative h-48 pointer-events-auto mt-4 overflow-visible">
-          <div className="flex flex-row justify-center items-end px-8 py-4 max-w-full overflow-x-auto overflow-y-visible pb-8 select-none">
+        {/* Horizontal Overlapping Player Hand list (Scroll-Free Fluid Margins) */}
+        <div className="w-full flex justify-center items-end relative h-32 sm:h-40 pointer-events-auto mt-2 overflow-visible">
+          <div className="flex flex-row justify-center items-end px-4 py-2 max-w-full overflow-hidden overflow-y-visible pb-6 select-none">
             {hand.map((card, idx) => {
               const playable = isCardPlayable(card);
               const isSelected = selectedCard?.id === card.id;
 
               const cardCount = hand.length;
-              // Dynamic left margin overlap: higher card count means more overlap to save space elegantly
-              const overlapStyle = idx > 0 ? { 
-                marginLeft: cardCount > 15 
-                  ? '-64px' 
-                  : cardCount > 12 
-                    ? '-52px' 
-                    : cardCount > 8 
-                      ? '-40px' 
-                      : '-24px' 
-              } : {};
+              // Mathematically calculate fluid overlap margin based on screen width and card counts
+              // This completely eliminates scrollbars, keeping the cards perfectly fitted to any display size!
+              const getDynamicOverlap = () => {
+                if (idx === 0) return {};
+                const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 640;
+                
+                let overlap = -24;
+                if (cardCount > 14) overlap = isSmallScreen ? -52 : -68;
+                else if (cardCount > 10) overlap = isSmallScreen ? -44 : -56;
+                else if (cardCount > 6) overlap = isSmallScreen ? -32 : -42;
+                else overlap = isSmallScreen ? -20 : -28;
+
+                return { marginLeft: `${overlap}px` };
+              };
 
               return (
                 <div 
                   key={card.id} 
                   className="relative transition-all duration-300 origin-bottom hover:z-50 shrink-0"
                   style={{
-                    ...overlapStyle,
+                    ...getDynamicOverlap(),
                     zIndex: isSelected ? 40 : idx + 5
                   }}
                 >
@@ -718,5 +769,6 @@ export const GameBoard = ({ onOpenSettings }) => {
       )}
 
     </div>
+    </>
   );
 };
