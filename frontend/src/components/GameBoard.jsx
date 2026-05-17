@@ -123,7 +123,6 @@ export const GameBoard = ({ onOpenSettings }) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [isPortrait, setIsPortrait] = useState(window.innerHeight > window.innerWidth);
   const [sortBy, setSortBy] = useState('suit'); // 'suit' | 'rank'
 
   const getSortedHand = () => {
@@ -148,13 +147,7 @@ export const GameBoard = ({ onOpenSettings }) => {
     });
   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsPortrait(window.innerHeight > window.innerWidth);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+
 
   const isMobile = typeof window !== 'undefined' && 
     (/Mobi|Android|iPhone|iPad|Macintosh/i.test(navigator.userAgent) || window.innerWidth < 768);
@@ -391,39 +384,7 @@ export const GameBoard = ({ onOpenSettings }) => {
 
   return (
     <>
-      {/* Dynamic Rotation Style Keyframes */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes rotatePhone {
-          0%, 100% { transform: rotate(0deg); }
-          50% { transform: rotate(90deg); }
-        }
-        .animate-rotate-phone {
-          animation: rotatePhone 2.5s ease-in-out infinite;
-        }
-      `}} />
 
-      {/* Immersive Mobile Rotate to Landscape Overlay */}
-      {isMobile && isPortrait && (
-        <div className="fixed inset-0 bg-slate-950 z-[99999] flex flex-col items-center justify-center p-6 text-center animate-fade-in select-none">
-          <div className="relative flex items-center justify-center w-24 h-24 mb-6">
-            {/* Spinning glowing phone icon */}
-            <div className="absolute inset-0 rounded-full bg-indigo-500/10 animate-ping duration-1000" />
-            <div className="w-16 h-28 border-4 border-slate-700 rounded-[20px] bg-slate-900 flex items-center justify-center animate-rotate-phone shadow-2xl relative">
-              {/* Home button & speaker lines */}
-              <div className="absolute top-1.5 w-6 h-1 bg-slate-700 rounded-full" />
-              <div className="absolute bottom-1.5 w-2 h-2 rounded-full border border-slate-700 bg-slate-800" />
-              {/* Internal screen glyph */}
-              <span className="text-xl">🔄</span>
-            </div>
-          </div>
-          <h2 className="text-xl font-black text-white font-outfit uppercase tracking-wider mb-2">
-            Rotate Your Device
-          </h2>
-          <p className="text-xs text-gray-400 max-w-xs leading-relaxed font-semibold">
-            Kazhuthai requires Landscape Mode. Turn your device horizontally for the optimal multiplayer card-board experience!
-          </p>
-        </div>
-      )}
 
       <div className="w-full min-h-[90vh] flex flex-col gap-6 p-4 animate-fade-in select-none max-w-7xl mx-auto overflow-y-auto">
       
