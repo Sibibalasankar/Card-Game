@@ -16,30 +16,30 @@ const QUICK_EMOJIS = ['😂', '😎', '😡', '😭', '😮', '👍', '🐴', '�
 // Index 0 represents the active user at the bottom center.
 const POSITION_SCHEMAS = {
   3: [
-    { left: '50%', top: '85%' },  // Player 0 (Bottom Center)
-    { left: '15%', top: '25%' },  // Player 1 (Top Left)
-    { left: '85%', top: '25%' }   // Player 2 (Top Right)
+    { left: '50%', top: '80%' },  // Player 0 (Bottom Center)
+    { left: '18%', top: '25%' },  // Player 1 (Top Left)
+    { left: '82%', top: '25%' }   // Player 2 (Top Right)
   ],
   4: [
-    { left: '50%', top: '85%' },  // Player 0 (Bottom Center)
-    { left: '10%', top: '45%' },  // Player 1 (Middle Left)
-    { left: '50%', top: '10%' },  // Player 2 (Top Center)
-    { left: '90%', top: '45%' }   // Player 3 (Middle Right)
+    { left: '50%', top: '80%' },  // Player 0 (Bottom Center)
+    { left: '15%', top: '45%' },  // Player 1 (Middle Left)
+    { left: '50%', top: '15%' },  // Player 2 (Top Center)
+    { left: '85%', top: '45%' }   // Player 3 (Middle Right)
   ],
   5: [
-    { left: '50%', top: '85%' },  // Player 0 (Bottom Center)
-    { left: '10%', top: '55%' },  // Player 1 (Left)
-    { left: '25%', top: '15%' },  // Player 2 (Top Left)
-    { left: '75%', top: '15%' },  // Player 3 (Top Right)
-    { left: '90%', top: '55%' }   // Player 4 (Right)
+    { left: '50%', top: '80%' },  // Player 0 (Bottom Center)
+    { left: '15%', top: '55%' },  // Player 1 (Left)
+    { left: '28%', top: '20%' },  // Player 2 (Top Left)
+    { left: '72%', top: '20%' },  // Player 3 (Top Right)
+    { left: '85%', top: '55%' }   // Player 4 (Right)
   ],
   6: [
-    { left: '50%', top: '85%' },  // Player 0 (Bottom Center)
-    { left: '10%', top: '55%' },  // Player 1 (Bottom Left)
-    { left: '15%', top: '20%' },  // Player 2 (Top Left)
-    { left: '50%', top: '10%' },  // Player 3 (Top Center)
-    { left: '85%', top: '20%' },  // Player 4 (Top Right)
-    { left: '90%', top: '55%' }   // Player 5 (Bottom Right)
+    { left: '50%', top: '80%' },  // Player 0 (Bottom Center)
+    { left: '15%', top: '55%' },  // Player 1 (Bottom Left)
+    { left: '25%', top: '20%' },  // Player 2 (Top Left)
+    { left: '50%', top: '15%' },  // Player 3 (Top Center)
+    { left: '75%', top: '20%' },  // Player 4 (Top Right)
+    { left: '85%', top: '55%' }   // Player 5 (Bottom Right)
   ]
 };
 
@@ -161,15 +161,16 @@ export const GameBoard = ({ onOpenSettings }) => {
   };
 
   return (
-    <div className="w-full min-h-[92vh] flex flex-col lg:flex-row gap-6 p-4 animate-fade-in select-none relative overflow-x-hidden">
+    <div className="w-full min-h-[90vh] flex flex-col gap-6 p-4 animate-fade-in select-none max-w-7xl mx-auto overflow-y-auto">
       
-      {/* ------------------------------------------------------------------ */}
-      {/* MAIN GAME ZONE */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="flex-1 flex flex-col relative min-h-[500px] lg:min-h-0">
+      {/* UPPER ZONE: Table + Sidebar */}
+      <div className="w-full flex flex-col lg:flex-row gap-6 items-stretch">
         
-        {/* Table Felt Green Radial Background */}
-        <div className="absolute inset-0 rounded-3xl border border-poker-border shadow-2xl poker-table-bg overflow-hidden flex items-center justify-center">
+        {/* MAIN GAME ZONE */}
+        <div className="flex-1 flex flex-col relative w-full aspect-[4/3] md:aspect-[16/10] max-h-[60vh] min-h-[380px] md:min-h-[460px] rounded-3xl border border-poker-border shadow-2xl poker-table-bg overflow-visible">
+          
+          {/* Table Felt Green Radial Background */}
+          <div className="absolute inset-0 rounded-3xl poker-table-bg overflow-hidden flex items-center justify-center pointer-events-none">
           {/* Subtle Card Suits watermark layout on table felt */}
           <div className="absolute inset-0 opacity-[0.02] flex items-center justify-between p-24 text-[120px] pointer-events-none select-none">
             <span>♠</span>
@@ -293,7 +294,7 @@ export const GameBoard = ({ onOpenSettings }) => {
                 {/* Safe Status banner */}
                 {isSafe && (
                   <div className="absolute -top-3 z-30 bg-emerald-500 text-slate-900 font-extrabold text-[8px] tracking-wider uppercase rounded-full px-2 py-0.5 shadow-md flex items-center gap-0.5 border border-emerald-300">
-                    <Award size={8} /> SAFE #{gameStatePlayer?.exitOrder}
+                    <Award size={8} /> SAFE #{player.exitOrder}
                   </div>
                 )}
               </div>
@@ -446,12 +447,13 @@ export const GameBoard = ({ onOpenSettings }) => {
           <span>Surrender & Exit</span>
         </button>
 
-      </div>
-
+        </div> {/* CLOSES THE MAIN GAME ZONE */}
+      </div> {/* CLOSES THE UPPER ZONE */}
+ 
       {/* ------------------------------------------------------------------ */}
       {/* BOTTOM AREA: ACTIVE HAND & TURN OPERATIONS */}
       {/* ------------------------------------------------------------------ */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 z-30 pointer-events-none flex flex-col items-center">
+      <div className="w-full bg-black/40 backdrop-blur-md border border-white/5 rounded-3xl p-4 md:p-6 flex flex-col items-center justify-center mt-2 relative z-30 pointer-events-auto">
         
         {/* Play card execution deck */}
         {selectedCard && isMyTurn && (
