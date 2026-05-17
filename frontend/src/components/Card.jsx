@@ -36,16 +36,15 @@ export const Card = ({ card, onClick, disabled, isSelected, playable = true, cus
       layoutId={`card-${card.id}`}
       whileHover={playable && !disabled ? { 
         y: isSelected ? -36 : -24, 
-        scale: isSelected ? 1.16 : 1.08, 
         rotate: 1.5,
         boxShadow: isRed 
           ? '0 15px 30px -5px rgba(239, 68, 68, 0.45), 0 0 20px rgba(239, 68, 68, 0.25)' 
           : '0 15px 30px -5px rgba(99, 102, 241, 0.45), 0 0 20px rgba(99, 102, 241, 0.25)'
       } : {}}
-      whileTap={playable && !disabled ? { scale: 0.95 } : {}}
+      whileTap={playable && !disabled ? { scale: 0.98 } : {}}
       initial={{ scale: 0.8, opacity: 0, y: 50 }}
       animate={{ 
-        scale: isSelected ? 1.12 : 1, 
+        scale: 1, 
         opacity: 1, 
         y: isSelected ? -28 : 0 
       }}
