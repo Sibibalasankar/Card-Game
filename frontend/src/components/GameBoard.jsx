@@ -800,11 +800,12 @@ export const GameBoard = ({ onOpenSettings }) => {
                 if (idx === 0) return {};
                 const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 640;
                 
-                let overlap = -24;
-                if (cardCount > 14) overlap = isSmallScreen ? -52 : -68;
-                else if (cardCount > 10) overlap = isSmallScreen ? -44 : -56;
-                else if (cardCount > 6) overlap = isSmallScreen ? -32 : -42;
-                else overlap = isSmallScreen ? -20 : -28;
+                // Gentler overlap values so cards are evenly spread and playable!
+                let overlap = 0;
+                if (cardCount > 12) overlap = isSmallScreen ? -38 : -45;
+                else if (cardCount > 8) overlap = isSmallScreen ? -28 : -32;
+                else if (cardCount > 5) overlap = isSmallScreen ? -16 : -20;
+                else overlap = isSmallScreen ? -8 : -10;
 
                 return { marginLeft: `${overlap}px` };
               };
