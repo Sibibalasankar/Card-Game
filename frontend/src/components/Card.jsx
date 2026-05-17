@@ -35,26 +35,30 @@ export const Card = ({ card, onClick, disabled, isSelected, playable = true, cus
       onClick={() => playable && !disabled && onClick && onClick(card)}
       layoutId={`card-${card.id}`}
       whileHover={playable && !disabled ? { 
-        y: -24, 
-        scale: 1.08, 
-        rotate: 0,
+        y: isSelected ? -36 : -24, 
+        scale: isSelected ? 1.16 : 1.08, 
+        rotate: 1.5,
         boxShadow: isRed 
-          ? '0 10px 25px -5px rgba(239, 68, 68, 0.4), 0 0 15px rgba(239, 68, 68, 0.2)' 
-          : '0 10px 25px -5px rgba(99, 102, 241, 0.4), 0 0 15px rgba(99, 102, 241, 0.2)'
+          ? '0 15px 30px -5px rgba(239, 68, 68, 0.45), 0 0 20px rgba(239, 68, 68, 0.25)' 
+          : '0 15px 30px -5px rgba(99, 102, 241, 0.45), 0 0 20px rgba(99, 102, 241, 0.25)'
       } : {}}
       whileTap={playable && !disabled ? { scale: 0.95 } : {}}
       initial={{ scale: 0.8, opacity: 0, y: 50 }}
-      animate={{ scale: 1, opacity: 1, y: 0 }}
+      animate={{ 
+        scale: isSelected ? 1.12 : 1, 
+        opacity: 1, 
+        y: isSelected ? -28 : 0 
+      }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
       className={`
         relative w-16 h-24 sm:w-20 sm:h-30 md:w-24 md:h-36 lg:w-28 lg:h-40 rounded-xl sm:rounded-2xl bg-white text-slate-800 shadow-xl select-none cursor-pointer border border-slate-200/50 card-container overflow-hidden
         ${disabled ? 'opacity-40 cursor-not-allowed contrast-75' : ''}
         ${!playable ? 'cursor-default pointer-events-none' : ''}
-        ${isSelected ? 'border-2 border-indigo-500 ring-4 ring-indigo-500/20 -translate-y-6' : ''}
+        ${isSelected ? 'border-2 border-indigo-500 ring-4 ring-indigo-500/20' : ''}
         ${customStyles}
       `}
       style={{
-        boxShadow: isSelected ? '0 0 20px rgba(99, 102, 241, 0.6)' : undefined
+        boxShadow: isSelected ? '0 0 25px rgba(99, 102, 241, 0.65)' : undefined
       }}
     >
       {/* Top Left Indicator */}
