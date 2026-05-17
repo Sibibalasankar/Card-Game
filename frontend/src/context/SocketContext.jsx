@@ -18,7 +18,7 @@ export const SocketProvider = ({ children }) => {
   const [gameOverData, setGameOverData] = useState(null);
 
   // Set default Socket URL
-  const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+  const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'https://donkey-cards.onrender.com';
 
   useEffect(() => {
     // Connect to Socket server
