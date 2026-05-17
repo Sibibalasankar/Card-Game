@@ -373,8 +373,8 @@ export const GameBoard = ({ onOpenSettings }) => {
           </div>
         </div> {/* CLOSES THE GREEN RADIAL BACKGROUND felt */}
 
-          {/* TABLE CENTER PILE / DROP ZONE (100% Mathematically Centered) */}
-          <div className="w-48 h-48 sm:w-60 sm:h-60 md:w-72 md:h-72 rounded-full border border-dashed border-emerald-500/30 flex flex-col items-center justify-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 sm:p-6 bg-emerald-950/40 shadow-inner z-10">
+          {/* TABLE CENTER PILE / DROP ZONE (Clean borderless centered container) */}
+          <div className="w-48 h-48 sm:w-60 sm:h-60 md:w-72 md:h-72 flex flex-col items-center justify-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 sm:p-6 z-10 overflow-visible pointer-events-none">
             
             {/* Opened Suit banner */}
             {gameState.openedSuit ? (
