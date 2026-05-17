@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-custom-dark text-gray-100 font-sans antialiased overflow-x-hidden selection:bg-indigo-500 selection:text-white;
+    background-image: radial-gradient(circle at center, #181824 0%, #08080c 100%);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-outfit;
+  }
+}
+
+@layer components {
+  /* Glassmorphism utility components */
+  .glass-panel {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 shadow-xl;
+  }
+
+  .glass-card {
+    @apply bg-custom-card/85 backdrop-blur-lg border border-white/5 shadow-2xl;
+  }
+
+  .glass-input {
+    @apply bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 active:scale-95 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-indigo-500/20 transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-secondary {
+    @apply bg-white/5 hover:bg-white/10 border border-white/10 active:scale-95 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-success {
+    @apply bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 active:scale-95 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-emerald-500/20 transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none;
+  }
+  
+  .btn-gold {
+    @apply bg-gradient-to-r from-yellow-500 via-amber-500 to-amber-600 hover:from-yellow-400 hover:via-amber-400 hover:to-amber-500 active:scale-95 text-custom-dark font-black tracking-wide px-6 py-3 rounded-xl shadow-lg hover:shadow-amber-500/30 transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  /* Custom Card Game Styles */
+  .card-container {
+    perspective: 1000px;
+  }
+
+  .poker-table-bg {
+    background: radial-gradient(circle at center, #1b5a3a 0%, #0d3820 60%, #061f11 100%);
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.8);
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Shiny animations */
+@keyframes gold-shine {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.animate-gold-shine {
+  background-size: 200% auto;
+  animation: gold-shine 4s linear infinite;
+}
+
+/* Pulse Glows */
+@keyframes ring-glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(99, 102, 241, 0.4); }
+  50% { box-shadow: 0 0 25px rgba(99, 102, 241, 0.8); }
+}
+
+.active-glow-ring {
+  animation: ring-glow 2s infinite ease-in-out;
+}
