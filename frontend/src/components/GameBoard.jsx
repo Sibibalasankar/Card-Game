@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, Reorder } from 'framer-motion';
+import { motion, AnimatePresence, Reorder, useMotionValue, animate } from 'framer-motion';
 import { useGameSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 import { Card } from './Card';
@@ -110,6 +110,55 @@ const POSITION_SCHEMAS = {
     { left: '75%', top: '20%' },  // Player 4 (Top Right)
     { left: '85%', top: '55%' }   // Player 5 (Bottom Right)
   ]
+};
+const SortableCard = ({ card, playable, isSelected, getDynamicOverlap, idx, handleDragPlayCard, handleCardClick }) => {
+  const y = useMotionValue(0);
+
+  return (
+    <Reorder.Item 
+      value={card}
+      layout
+      drag="x" // Safe 1D horizontal sorting so the list doesn't get violently confused
+      dragSnapToOrigin={true}
+      dragElastic={0.4}
+      whileDrag={{ scale: 1.1, zIndex: 100, rotate: 5 }}
+      onDrag={(e, info) => {
+        // If dragged upwards, instantly pipe the exact raw pointer pixel offset into our inner proxy div
+        if (info.offset.y < 0) {
+          y.set(info.offset.y);
+        }
+      }}
+      onDragEnd={(e, info) => {
+        if (playable && info.offset.y < -50) {
+          handleDragPlayCard(card);
+        }
+        // Snap back magnetically down to 0 if we let go and didn't throw it!
+        animate(y, 0, { type: "spring", stiffness: 300, damping: 20 });
+      }}
+      className="relative origin-bottom hover:z-50 shrink-0 cursor-grab active:cursor-grabbing"
+      style={{
+        ...getDynamicOverlap(),
+        zIndex: isSelected ? 40 : idx + 5
+      }}
+    >
+      {/* 
+        This inner proxy div handles the vertical visual displacement! 
+        Because it's inner, it escapes the Reorder.Item's layout projection math lock on the X axis, 
+        giving the illusion of free 2D drag! 
+      */}
+      <motion.div 
+        style={{ y }} 
+        className="w-full h-full drop-shadow-2xl"
+      >
+        <Card
+          card={card}
+          disabled={!playable}
+          isSelected={isSelected}
+          onClick={handleCardClick}
+        />
+      </motion.div>
+    </Reorder.Item>
+  );
 };
 
 export const GameBoard = ({ onOpenSettings }) => {
