@@ -609,8 +609,14 @@ export const GameBoard = ({ onOpenSettings }) => {
                     w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-tr ${getAvatarColor(player.avatar)} flex items-center justify-center text-3xl shadow-lg border border-white/5 relative z-10
                     ${isSafe ? 'opacity-50 grayscale contrast-75' : ''}
                     ${isActive ? 'scale-105 border-indigo-400' : ''}
+                    ${player.isConnected === false ? 'opacity-40 grayscale contrast-75' : ''}
                   `}>
                     {AVATARS.find(a => a.id === player.avatar)?.emoji || '🐴'}
+                    {player.isConnected === false && (
+                      <span className="absolute text-[7px] font-extrabold text-rose-400 bg-black/90 border border-rose-500/30 px-1 py-0.5 rounded bottom-1 left-1/2 -translate-x-1/2 select-none tracking-widest uppercase shadow">
+                        Offline
+                      </span>
+                    )}
                   </div>
 
                   {/* Host crown icon */}

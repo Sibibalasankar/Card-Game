@@ -90,11 +90,13 @@ export const LobbyPanel = () => {
               <div 
                 key={player.id}
                 className={`glass-card p-5 rounded-2xl border flex items-center justify-between transition-all duration-300 ${
-                  player.isReady 
-                    ? 'border-emerald-500/20 bg-emerald-500/5' 
-                    : player.isHost 
-                      ? 'border-indigo-500/20 bg-indigo-500/5' 
-                      : 'border-white/5 bg-white/5'
+                  player.isConnected === false
+                    ? 'border-rose-500/20 bg-rose-500/5 opacity-60'
+                    : player.isReady 
+                      ? 'border-emerald-500/20 bg-emerald-500/5' 
+                      : player.isHost 
+                        ? 'border-indigo-500/20 bg-indigo-500/5' 
+                        : 'border-white/5 bg-white/5'
                 }`}
               >
                 <div className="flex items-center gap-4">
@@ -114,7 +116,11 @@ export const LobbyPanel = () => {
 
                 {/* Status indicator */}
                 <div>
-                  {player.isHost ? (
+                  {player.isConnected === false ? (
+                    <div className="flex items-center gap-1 text-xs text-rose-400 font-bold animate-pulse">
+                      ⚠️ Offline
+                    </div>
+                  ) : player.isHost ? (
                     <div className="flex items-center gap-1 text-xs text-indigo-400 font-bold">
                       👑 Active
                     </div>

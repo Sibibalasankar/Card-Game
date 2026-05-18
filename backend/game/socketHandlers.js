@@ -309,6 +309,13 @@ module.exports = (io) => {
         if (existingPlayer) {
           console.log(`Updating/Reconnecting user ${username} in room ${code}`);
           
+          // Clear any pending disconnect timeouts
+          if (room.disconnectTimeouts && room.disconnectTimeouts[userId]) {
+            console.log(`Clearing disconnect timeout for user ${username}`);
+            clearTimeout(room.disconnectTimeouts[userId]);
+            delete room.disconnectTimeouts[userId];
+          }
+          
           // Dynamically sync updated profile details
           existingPlayer.name = username;
           existingPlayer.avatar = avatar;
@@ -616,10 +623,9 @@ module.exports = (io) => {
       if (room && socketUser) {
         const p = room.players.find(p => p.id === socketUser.id);
         if (p) {
+          p.isConnected = false;
+          
           if (room.status === 'playing') {
-            // Keep them inside the game so they can RECONNECT. Just flag connection.
-            p.isConnected = false;
-            
             room.chatMessages.push({
               sender: 'System',
               text: `${socketUser.name} lost connection. Waiting for reconnect...`,
@@ -627,21 +633,66 @@ module.exports = (io) => {
             });
 
             broadcastRoomUpdate(room);
-            checkLobbySuspension(room);
-          } else {
-            // Remove completely from lobby
-            room.players = room.players.filter(p => p.id !== socketUser.id);
-            if (room.players.length === 0) {
-              if (room.timer) clearInterval(room.timer);
-              delete global.rooms[room.code];
-              console.log(`Room ${room.code} destroyed on disconnect.`);
-            } else {
-              if (room.creatorId === socketUser.id) {
-                room.players[0].isHost = true;
-                room.creatorId = room.players[0].id;
-              }
-              broadcastRoomUpdate(room);
+            
+            // Set a timeout for match suspension instead of checking immediately
+            room.disconnectTimeouts = room.disconnectTimeouts || {};
+            if (room.disconnectTimeouts[socketUser.id]) {
+              clearTimeout(room.disconnectTimeouts[socketUser.id]);
             }
+            
+            room.disconnectTimeouts[socketUser.id] = setTimeout(() => {
+              const playerStillDisconnected = room.players.find(pl => pl.id === socketUser.id && !pl.isConnected);
+              if (playerStillDisconnected) {
+                console.log(`Player ${socketUser.name} remained disconnected. Checking for lobby suspension...`);
+                checkLobbySuspension(room);
+              }
+              delete room.disconnectTimeouts[socketUser.id];
+            }, 8000); // 8 seconds grace period for network reconnects / page refreshes
+            
+          } else {
+            // Lobby mode
+            room.chatMessages.push({
+              sender: 'System',
+              text: `${socketUser.name} lost connection. Waiting for reconnect...`,
+              timestamp: Date.now()
+            });
+            broadcastRoomUpdate(room);
+            
+            room.disconnectTimeouts = room.disconnectTimeouts || {};
+            if (room.disconnectTimeouts[socketUser.id]) {
+              clearTimeout(room.disconnectTimeouts[socketUser.id]);
+            }
+            
+            room.disconnectTimeouts[socketUser.id] = setTimeout(() => {
+              const playerStillDisconnected = room.players.find(pl => pl.id === socketUser.id && !pl.isConnected);
+              if (playerStillDisconnected) {
+                console.log(`Lobby disconnect timeout expired for ${socketUser.name}. Removing from room ${room.code}.`);
+                
+                room.players = room.players.filter(pl => pl.id !== socketUser.id);
+                
+                if (room.players.length === 0) {
+                  if (room.timer) clearInterval(room.timer);
+                  // Clear any other disconnect timeouts for this room
+                  if (room.disconnectTimeouts) {
+                    Object.values(room.disconnectTimeouts).forEach(t => clearTimeout(t));
+                  }
+                  delete global.rooms[room.code];
+                  console.log(`Room ${room.code} destroyed on disconnect timeout.`);
+                } else {
+                  if (room.creatorId === socketUser.id) {
+                    room.players[0].isHost = true;
+                    room.creatorId = room.players[0].id;
+                  }
+                  room.chatMessages.push({
+                    sender: 'System',
+                    text: `${socketUser.name} left the lobby (connection timeout).`,
+                    timestamp: Date.now()
+                  });
+                  broadcastRoomUpdate(room);
+                }
+              }
+              delete room.disconnectTimeouts[socketUser.id];
+            }, 8000); // 8 seconds grace period in lobby too!
           }
         }
       }
