@@ -266,7 +266,10 @@ export const GameBoard = ({ onOpenSettings }) => {
 
   const getPlayedCardPosition = (playedCardPlayerId) => {
     const playerIdx = rotatedPlayers.findIndex(p => p.id === playedCardPlayerId);
-    if (playerIdx === -1) return { left: '50%', top: '50%', transform: 'translate(-50%, -50%) scale(0.55)' };
+    const isMobileMin = typeof window !== 'undefined' && Math.min(window.innerWidth, window.innerHeight) < 520;
+    const scale = isMobileMin ? 'scale(0.38)' : 'scale(0.55)';
+
+    if (playerIdx === -1) return { left: '50%', top: '50%', transform: `translate(-50%, -50%) ${scale}` };
 
     const coords = positionSchema[playerIdx] || { left: '50%', top: '80%' };
     const leftVal = parseFloat(coords.left);
@@ -274,36 +277,36 @@ export const GameBoard = ({ onOpenSettings }) => {
 
     if (playerIdx === 0) {
       return {
-        bottom: '22%',
+        bottom: isMobileMin ? '26%' : '22%',
         left: '50%',
-        transform: 'translateX(-50%) scale(0.55)'
+        transform: `translateX(-50%) ${scale}`
       };
     }
 
     if (leftVal < 35) {
       return {
-        left: '26%',
+        left: isMobileMin ? '30%' : '26%',
         top: '50%',
-        transform: 'translateY(-50%) scale(0.55)'
+        transform: `translateY(-50%) ${scale}`
       };
     } else if (leftVal > 65) {
       return {
-        right: '26%',
+        right: isMobileMin ? '30%' : '26%',
         top: '50%',
-        transform: 'translateY(-50%) scale(0.55)'
+        transform: `translateY(-50%) ${scale}`
       };
     } else if (topVal < 30) {
       return {
-        top: '22%',
+        top: isMobileMin ? '26%' : '22%',
         left: '50%',
-        transform: 'translateX(-50%) scale(0.55)'
+        transform: `translateX(-50%) ${scale}`
       };
     }
 
     return {
       left: '50%',
       top: '50%',
-      transform: 'translate(-50%, -50%) scale(0.55)'
+      transform: `translate(-50%, -50%) ${scale}`
     };
   };
 
@@ -788,7 +791,7 @@ export const GameBoard = ({ onOpenSettings }) => {
       {/* ------------------------------------------------------------------ */}
       {/* BOTTOM AREA: ACTIVE HAND & TURN OPERATIONS */}
       {/* ------------------------------------------------------------------ */}
-      <div className="w-full bg-black/40 backdrop-blur-md border border-white/5 rounded-3xl p-4 md:p-6 flex flex-col items-center justify-center mt-2 relative z-30 pointer-events-auto">
+      <div className="w-full bg-black/40 backdrop-blur-md border border-white/5 rounded-3xl p-4 md:p-6 flex flex-col items-center justify-center mt-2 relative z-30 pointer-events-auto player-hand-container">
         
         {/* Play card execution deck */}
         {selectedCard && isMyTurn && (
@@ -854,13 +857,21 @@ export const GameBoard = ({ onOpenSettings }) => {
               const getDynamicOverlap = () => {
                 if (idx === 0) return {};
                 const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 640;
+                const isMobileMin = typeof window !== 'undefined' && Math.min(window.innerWidth, window.innerHeight) < 520;
                 
                 // Gentler overlap values so cards are evenly spread and playable!
                 let overlap = 0;
-                if (cardCount > 12) overlap = isSmallScreen ? -38 : -45;
-                else if (cardCount > 8) overlap = isSmallScreen ? -28 : -32;
-                else if (cardCount > 5) overlap = isSmallScreen ? -16 : -20;
-                else overlap = isSmallScreen ? -8 : -10;
+                if (isMobileMin) {
+                  if (cardCount > 12) overlap = -32;
+                  else if (cardCount > 8) overlap = -24;
+                  else if (cardCount > 5) overlap = -14;
+                  else overlap = -4;
+                } else {
+                  if (cardCount > 12) overlap = isSmallScreen ? -38 : -45;
+                  else if (cardCount > 8) overlap = isSmallScreen ? -28 : -32;
+                  else if (cardCount > 5) overlap = isSmallScreen ? -16 : -20;
+                  else overlap = isSmallScreen ? -8 : -10;
+                }
 
                 return { marginLeft: `${overlap}px` };
               };

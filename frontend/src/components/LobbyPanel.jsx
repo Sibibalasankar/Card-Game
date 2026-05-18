@@ -189,7 +189,7 @@ export const LobbyPanel = () => {
       </div>
 
       {/* RIGHT COLUMN: CHAT PANEL */}
-      <div className="glass-card rounded-3xl border border-white/10 flex flex-col h-[400px] lg:h-[520px] overflow-hidden">
+      <div className="glass-card rounded-3xl border border-white/10 flex flex-col h-[400px] lg:h-[520px] overflow-hidden lobby-chat-container">
         {/* Chat Title */}
         <div className="p-4 border-b border-white/10 flex items-center gap-2 text-white font-outfit font-black tracking-wide bg-white/5">
           <MessageSquare size={16} className="text-indigo-400" />
