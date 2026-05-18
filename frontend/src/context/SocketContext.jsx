@@ -199,6 +199,17 @@ export const SocketProvider = ({ children }) => {
     setRoundResultAlert(null);
   };
 
+  const syncRoomState = () => {
+    if (socket && user) {
+      console.log('Manually refreshing and synchronizing room state...');
+      socket.emit('register_socket', {
+        userId: user.id,
+        username: user.username,
+        avatar: user.avatar
+      });
+    }
+  };
+
   return (
     <SocketContext.Provider value={{
       socket,
@@ -218,7 +229,8 @@ export const SocketProvider = ({ children }) => {
       sendMessage,
       sendEmoji,
       leaveRoom,
-      resetGameData
+      resetGameData,
+      syncRoomState
     }}>
       {children}
     </SocketContext.Provider>

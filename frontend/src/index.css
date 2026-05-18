@@ -241,38 +241,38 @@
     font-size: 7px !important;
   }
 
-  /* Scale down individual card dimensions inside fanned hands */
-  .card-container {
+  /* Scale down individual card dimensions inside fanned hands ONLY */
+  .player-hand-container .card-container {
     width: 48px !important;
     height: 76px !important;
     border-radius: 8px !important;
   }
 
-  .card-container .text-xs, 
-  .card-container .sm\:text-sm,
-  .card-container .md\:text-lg,
-  .card-container .lg\:text-xl {
+  .player-hand-container .card-container .text-xs, 
+  .player-hand-container .card-container .sm\:text-sm,
+  .player-hand-container .card-container .md\:text-lg,
+  .player-hand-container .card-container .lg\:text-xl {
     font-size: 8px !important;
   }
   
-  .card-container .text-\[9px\],
-  .card-container .sm\:text-xs,
-  .card-container .md\:text-sm {
+  .player-hand-container .card-container .text-\[9px\],
+  .player-hand-container .card-container .sm\:text-xs,
+  .player-hand-container .card-container .md\:text-sm {
     font-size: 7px !important;
   }
 
-  .card-container .text-2xl,
-  .card-container .sm\:text-4xl,
-  .card-container .md\:text-5xl,
-  .card-container .lg\:text-6xl {
+  .player-hand-container .card-container .text-2xl,
+  .player-hand-container .card-container .sm\:text-4xl,
+  .player-hand-container .card-container .md\:text-5xl,
+  .player-hand-container .card-container .lg\:text-6xl {
     font-size: 16px !important;
   }
 
-  .card-container .top-1 {
+  .player-hand-container .card-container .top-1 {
     top: 2px !important;
     left: 4px !important;
   }
-  .card-container .bottom-1 {
+  .player-hand-container .card-container .bottom-1 {
     bottom: 2px !important;
     right: 4px !important;
   }
@@ -471,38 +471,38 @@
     font-size: 7px !important;
   }
 
-  /* Scale down individual card dimensions inside fanned hands */
-  body.game-arena-active .card-container {
+  /* Scale down individual card dimensions inside fanned hands ONLY */
+  body.game-arena-active .player-hand-container .card-container {
     width: 48px !important;
     height: 76px !important;
     border-radius: 8px !important;
   }
 
-  body.game-arena-active .card-container .text-xs, 
-  body.game-arena-active .card-container .sm\:text-sm,
-  body.game-arena-active .card-container .md\:text-lg,
-  body.game-arena-active .card-container .lg\:text-xl {
+  body.game-arena-active .player-hand-container .card-container .text-xs, 
+  body.game-arena-active .player-hand-container .card-container .sm\:text-sm,
+  body.game-arena-active .player-hand-container .card-container .md\:text-lg,
+  body.game-arena-active .player-hand-container .card-container .lg\:text-xl {
     font-size: 8px !important;
   }
   
-  body.game-arena-active .card-container .text-\[9px\],
-  body.game-arena-active .card-container .sm\:text-xs,
-  body.game-arena-active .card-container .md\:text-sm {
+  body.game-arena-active .player-hand-container .card-container .text-\[9px\],
+  body.game-arena-active .player-hand-container .card-container .sm\:text-xs,
+  body.game-arena-active .player-hand-container .card-container .md\:text-sm {
     font-size: 7px !important;
   }
 
-  body.game-arena-active .card-container .text-2xl,
-  body.game-arena-active .card-container .sm\:text-4xl,
-  body.game-arena-active .card-container .md\:text-5xl,
-  body.game-arena-active .card-container .lg\:text-6xl {
+  body.game-arena-active .player-hand-container .card-container .text-2xl,
+  body.game-arena-active .player-hand-container .card-container .sm\:text-4xl,
+  body.game-arena-active .player-hand-container .card-container .md\:text-5xl,
+  body.game-arena-active .player-hand-container .card-container .lg\:text-6xl {
     font-size: 16px !important;
   }
 
-  body.game-arena-active .card-container .top-1 {
+  body.game-arena-active .player-hand-container .card-container .top-1 {
     top: 2px !important;
     left: 4px !important;
   }
-  body.game-arena-active .card-container .bottom-1 {
+  body.game-arena-active .player-hand-container .card-container .bottom-1 {
     bottom: 2px !important;
     right: 4px !important;
   }
@@ -586,5 +586,52 @@
     padding-top: 0.25rem !important;
     padding-bottom: 0.25rem !important;
     margin-top: 0.25rem !important;
+  }
+}
+
+/* Remove Social Hub entirely on all mobile devices and viewport overrides */
+@media (max-width: 1024px) {
+  .social-hub-toggle, .social-hub-drawer {
+    display: none !important;
+  }
+
+  /* Reposition HUD banners to physical bottom-left (visual top-left) to prevent center pile overlap */
+  .opened-suit-banner {
+    top: unset !important;
+    bottom: 3rem !important;
+    left: 1rem !important;
+    right: unset !important;
+    transform: none !important;
+  }
+
+  .timer-banner {
+    top: unset !important;
+    bottom: 1rem !important;
+    left: 1rem !important;
+    right: unset !important;
+    transform: none !important;
+  }
+}
+
+@media (max-height: 520px) {
+  .social-hub-toggle, .social-hub-drawer {
+    display: none !important;
+  }
+
+  /* Reposition HUD banners to physical bottom-left (visual top-left) to prevent center pile overlap */
+  .opened-suit-banner {
+    top: unset !important;
+    bottom: 3rem !important;
+    left: 1rem !important;
+    right: unset !important;
+    transform: none !important;
+  }
+
+  .timer-banner {
+    top: unset !important;
+    bottom: 1rem !important;
+    left: 1rem !important;
+    right: unset !important;
+    transform: none !important;
   }
 }

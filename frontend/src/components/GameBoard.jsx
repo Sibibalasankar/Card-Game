@@ -6,7 +6,8 @@ import { Card } from './Card';
 import { sounds } from '../utils/soundManager';
 import { 
   Users, MessageSquare, Send, Award, Clock, ArrowRight,
-  Smile, Settings, Info, ShieldAlert, Sparkles, LogOut
+  Smile, Settings, Info, ShieldAlert, Sparkles, LogOut,
+  RotateCw
 } from 'lucide-react';
 import { AVATARS } from '../utils/constants';
 
@@ -164,7 +165,8 @@ const SortableCard = ({ card, playable, isSelected, getDynamicOverlap, idx, hand
 export const GameBoard = ({ onOpenSettings }) => {
   const { 
     room, hand, timerRemaining, roundResultAlert, setRoundResultAlert, errorNotification, 
-    floatingEmojis, gameOverData, playCard, sendMessage, sendEmoji, leaveRoom, resetGameData
+    floatingEmojis, gameOverData, playCard, sendMessage, sendEmoji, leaveRoom, resetGameData,
+    syncRoomState
   } = useGameSocket();
   const { user } = useAuth();
 
@@ -267,7 +269,7 @@ export const GameBoard = ({ onOpenSettings }) => {
   const getPlayedCardPosition = (playedCardPlayerId) => {
     const playerIdx = rotatedPlayers.findIndex(p => p.id === playedCardPlayerId);
     const isMobileMin = typeof window !== 'undefined' && Math.min(window.innerWidth, window.innerHeight) < 520;
-    const scale = isMobileMin ? 'scale(0.38)' : 'scale(0.55)';
+    const scale = isMobileMin ? 'scale(0.85)' : 'scale(0.55)';
 
     if (playerIdx === -1) return { left: '50%', top: '50%', transform: `translate(-50%, -50%) ${scale}` };
 
@@ -470,27 +472,7 @@ export const GameBoard = ({ onOpenSettings }) => {
   }, []);
 
   const getHandTranslation = () => {
-    const cardCount = displayHand.length;
-    if (cardCount <= 1) return 'none';
-    const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 640;
-    const isMobileMin = typeof window !== 'undefined' && Math.min(window.innerWidth, window.innerHeight) < 520;
-    
-    let overlap = 0;
-    if (isMobileMin) {
-      if (cardCount > 12) overlap = -32;
-      else if (cardCount > 8) overlap = -24;
-      else if (cardCount > 5) overlap = -14;
-      else overlap = -4;
-    } else {
-      if (cardCount > 12) overlap = isSmallScreen ? -38 : -45;
-      else if (cardCount > 8) overlap = isSmallScreen ? -28 : -32;
-      else if (cardCount > 5) overlap = isSmallScreen ? -16 : -20;
-      else overlap = isSmallScreen ? -8 : -10;
-    }
-    
-    // Total translation to shift visual center back to absolute middle
-    const totalShift = Math.abs((cardCount - 1) * overlap) / 2;
-    return `translateX(${totalShift}px)`;
+    return 'none';
   };
 
   return (
@@ -529,12 +511,19 @@ export const GameBoard = ({ onOpenSettings }) => {
               >
                 <Settings size={12} />
               </button>
+              <button
+                onClick={() => { sounds.playClick(); syncRoomState(); }}
+                className="p-2 bg-black/60 hover:bg-indigo-500/20 border border-white/10 text-indigo-400 hover:text-indigo-200 rounded-full shadow-lg transition-all flex items-center justify-center"
+                title="Refresh Room State"
+              >
+                <RotateCw size={12} className="hover:rotate-180 transition-transform duration-500" />
+              </button>
             </div>
 
             {/* Right: Expandable Social Chat */}
             <button
               onClick={() => { sounds.playClick(); setIsChatOpen(!isChatOpen); }}
-              className={`p-2 rounded-full border shadow-lg transition-all flex items-center gap-1 text-[9px] font-black
+              className={`p-2 rounded-full border shadow-lg transition-all flex items-center gap-1 text-[9px] font-black social-hub-toggle
                 ${isChatOpen 
                   ? 'bg-indigo-600 border-indigo-400 text-white animate-pulse' 
                   : 'bg-black/60 border-white/10 text-indigo-400 hover:text-white'
@@ -555,18 +544,29 @@ export const GameBoard = ({ onOpenSettings }) => {
           </div>
         </div> {/* CLOSES THE GREEN RADIAL BACKGROUND felt */}
 
+          {/* Opened Suit banner */}
+          {gameState.openedSuit && (
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 px-3 py-1 bg-black/60 rounded-full border border-white/5 text-[8px] sm:text-[10px] font-black tracking-widest text-indigo-300 flex items-center gap-1 uppercase opened-suit-banner z-30 pointer-events-auto">
+              <span>Opened Suit:</span>
+              <span className="text-xs sm:text-sm">{gameState.openedSuit === 'Spades' ? '♠' : gameState.openedSuit === 'Hearts' ? '♥' : gameState.openedSuit === 'Diamonds' ? '♦' : '♣'}</span>
+              <span className="hidden sm:inline">({gameState.openedSuit})</span>
+            </div>
+          )}
+
+          {/* Turn countdown display (Stacked elegantly under the Opened Suit banner) */}
+          {timerRemaining !== null && !roundResultAlert && (
+            <div className="absolute top-12 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-black/60 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-bold text-yellow-400 border border-white/5 shadow-md timer-banner z-30 pointer-events-auto">
+              <Clock size={10} className={timerRemaining <= 5 ? 'text-red-500 animate-pulse' : ''} />
+              <span>Timer: {timerRemaining}s</span>
+            </div>
+          )}
+
           {/* TABLE CENTER PILE / DROP ZONE (Clean borderless centered container) */}
           <div className="w-48 h-48 sm:w-60 sm:h-60 md:w-72 md:h-72 flex flex-col items-center justify-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 sm:p-6 z-10 overflow-visible pointer-events-none">
             
-            {/* Opened Suit banner */}
-            {gameState.openedSuit ? (
-              <div className="absolute top-2 sm:top-4 px-3 py-0.5 sm:py-1 bg-black/60 rounded-full border border-white/5 text-[8px] sm:text-[10px] font-black tracking-widest text-indigo-300 flex items-center gap-1 uppercase">
-                <span>Opened Suit:</span>
-                <span className="text-xs sm:text-sm">{gameState.openedSuit === 'Spades' ? '♠' : gameState.openedSuit === 'Hearts' ? '♥' : gameState.openedSuit === 'Diamonds' ? '♦' : '♣'}</span>
-                <span className="hidden sm:inline">({gameState.openedSuit})</span>
-              </div>
-            ) : (
-              <div className="text-[8px] sm:text-[10px] font-bold text-gray-500/80 uppercase tracking-widest text-center">
+            {/* Show Waiting for Lead Play in center of pile when no opened suit */}
+            {!gameState.openedSuit && (
+              <div className="text-[8px] sm:text-[10px] font-bold text-gray-500/80 uppercase tracking-widest text-center absolute top-2 sm:top-4">
                 Waiting for Lead Play
               </div>
             )}
@@ -596,14 +596,6 @@ export const GameBoard = ({ onOpenSettings }) => {
                 </div>
               )}
             </div>
-
-            {/* Turn countdown display (Stacked elegantly under the Opened Suit banner) */}
-            {timerRemaining !== null && !roundResultAlert && (
-              <div className="absolute top-10 sm:top-14 flex items-center gap-1 bg-black/60 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-bold text-yellow-400 border border-white/5 shadow-md">
-                <Clock size={10} className={timerRemaining <= 5 ? 'text-red-500 animate-pulse' : ''} />
-                <span>Timer: {timerRemaining}s</span>
-              </div>
-            )}
           </div>
 
           {/* CIRCULAR ARRANGEMENT OF PLAYERS */}
@@ -738,7 +730,7 @@ export const GameBoard = ({ onOpenSettings }) => {
     {/* FLOATING SOCIAL SLIDE-OUT DRAWER */}
     {/* ------------------------------------------------------------------ */}
     <div 
-      className={`fixed top-0 right-0 h-full w-80 bg-slate-950/95 backdrop-blur-md border-l border-white/10 z-50 p-6 flex flex-col gap-4 shadow-2xl transition-transform duration-300 pointer-events-auto
+      className={`fixed top-0 right-0 h-full w-80 bg-slate-950/95 backdrop-blur-md border-l border-white/10 z-50 p-6 flex flex-col gap-4 shadow-2xl transition-transform duration-300 pointer-events-auto social-hub-drawer
         ${isChatOpen ? 'translate-x-0' : 'translate-x-full'}
       `}
     >
