@@ -163,7 +163,7 @@ const SortableCard = ({ card, playable, isSelected, getDynamicOverlap, idx, hand
 
 export const GameBoard = ({ onOpenSettings }) => {
   const { 
-    room, hand, timerRemaining, roundResultAlert, errorNotification, 
+    room, hand, timerRemaining, roundResultAlert, setRoundResultAlert, errorNotification, 
     floatingEmojis, gameOverData, playCard, sendMessage, sendEmoji, leaveRoom, resetGameData
   } = useGameSocket();
   const { user } = useAuth();
@@ -461,6 +461,38 @@ export const GameBoard = ({ onOpenSettings }) => {
     );
   };
 
+  // Apply rotation rules only while in the game arena
+  useEffect(() => {
+    document.body.classList.add('game-arena-active');
+    return () => {
+      document.body.classList.remove('game-arena-active');
+    };
+  }, []);
+
+  const getHandTranslation = () => {
+    const cardCount = displayHand.length;
+    if (cardCount <= 1) return 'none';
+    const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 640;
+    const isMobileMin = typeof window !== 'undefined' && Math.min(window.innerWidth, window.innerHeight) < 520;
+    
+    let overlap = 0;
+    if (isMobileMin) {
+      if (cardCount > 12) overlap = -32;
+      else if (cardCount > 8) overlap = -24;
+      else if (cardCount > 5) overlap = -14;
+      else overlap = -4;
+    } else {
+      if (cardCount > 12) overlap = isSmallScreen ? -38 : -45;
+      else if (cardCount > 8) overlap = isSmallScreen ? -28 : -32;
+      else if (cardCount > 5) overlap = isSmallScreen ? -16 : -20;
+      else overlap = isSmallScreen ? -8 : -10;
+    }
+    
+    // Total translation to shift visual center back to absolute middle
+    const totalShift = Math.abs((cardCount - 1) * overlap) / 2;
+    return `translateX(${totalShift}px)`;
+  };
+
   return (
     <>
 
@@ -468,7 +500,7 @@ export const GameBoard = ({ onOpenSettings }) => {
       <div className="w-full min-h-[90vh] flex flex-col gap-6 p-4 animate-fade-in select-none max-w-7xl mx-auto overflow-y-auto">
       
       {/* UPPER ZONE: Table + Sidebar */}
-      <div className="w-full flex flex-col lg:flex-row gap-6 items-stretch">
+      <div className="w-full flex flex-col lg:flex-row gap-6 items-stretch upper-game-zone">
         
         {/* MAIN GAME ZONE */}
         <div className="flex-1 flex flex-col relative w-full aspect-[4/3] md:aspect-[16/10] max-h-[60vh] min-h-[380px] md:min-h-[460px] rounded-3xl border border-poker-border shadow-2xl poker-table-bg overflow-visible">
@@ -655,7 +687,11 @@ export const GameBoard = ({ onOpenSettings }) => {
 
         {/* ROUND RESOLUTION OVERLAY ALERT */}
         {roundResultAlert && (
-          <div className="absolute inset-0 bg-black/75 backdrop-blur-sm z-40 rounded-3xl flex items-center justify-center p-6 animate-fade-in">
+          <div 
+            onClick={() => setRoundResultAlert(null)}
+            className="absolute inset-0 bg-black/75 backdrop-blur-sm z-40 rounded-3xl flex items-center justify-center p-6 animate-fade-in cursor-pointer"
+            title="Click to dismiss instantly"
+          >
             <div className="text-center space-y-6 max-w-md">
               <span className="text-[10px] font-bold text-yellow-400 uppercase tracking-widest border border-yellow-500/30 rounded-full px-4 py-1.5 bg-yellow-500/5">
                 {roundResultAlert.type === 'break' ? '⚡ BREAK RESOLUTION ⚡' : '✨ NORMAL RESOLUTION ✨'}
@@ -845,8 +881,16 @@ export const GameBoard = ({ onOpenSettings }) => {
         </div>
 
         {/* Horizontal Overlapping Player Hand list (Scroll-Free Fluid Margins) */}
-        <div className="w-full flex justify-center items-end relative h-36 sm:h-44 md:h-48 pointer-events-auto mt-2 overflow-visible">
-          <Reorder.Group axis="x" values={displayHand} onReorder={handleReorder} className="flex flex-row justify-center items-end px-4 pt-12 pb-4 max-w-full overflow-visible select-none">
+        <div 
+          className="w-full flex justify-center items-end relative h-36 sm:h-44 md:h-48 pointer-events-auto mt-2 overflow-visible"
+          style={{ transform: getHandTranslation() }}
+        >
+          <Reorder.Group 
+            axis="x" 
+            values={displayHand} 
+            onReorder={handleReorder} 
+            className="flex flex-row justify-center items-end px-4 pt-12 pb-4 max-w-full overflow-visible select-none"
+          >
             {displayHand.map((card, idx) => {
               const playable = isCardPlayable(card);
               const isSelected = selectedCard?.id === card.id;

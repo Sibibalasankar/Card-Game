@@ -168,10 +168,18 @@
     gap: 0.5rem !important;
   }
   
+  .upper-game-zone {
+    flex: 1 1 0% !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.25rem !important;
+  }
+  
   /* Restrict upper zone game table felt height */
   .flex-1.flex.flex-col.relative.w-full.poker-table-bg {
     aspect-ratio: unset !important;
-    max-height: 48% !important;
+    max-height: 100% !important;
     min-height: unset !important;
     flex: 1 1 0% !important;
     border-radius: 1rem !important;
@@ -353,7 +361,7 @@
 
 /* Force premium landscape layout rotation on mobile devices held in portrait mode */
 @media (max-width: 932px) and (orientation: portrait) {
-  html, body {
+  body.game-arena-active, body.game-arena-active html {
     overflow: hidden !important;
     position: fixed !important;
     width: 100% !important;
@@ -363,7 +371,7 @@
     touch-action: none !important;
   }
 
-  #root {
+  body.game-arena-active #root {
     width: 100vh !important;
     height: 100vw !important;
     position: fixed !important;
@@ -374,14 +382,14 @@
   }
 
   /* Prevent scrolling on all major screen wrappers */
-  .min-h-screen {
+  body.game-arena-active .min-h-screen {
     height: 100% !important;
     max-height: 100% !important;
     min-height: unset !important;
     overflow: hidden !important;
   }
   
-  .w-full.min-h-\[90vh\].flex.flex-col {
+  body.game-arena-active .w-full.min-h-\[90vh\].flex.flex-col {
     min-height: unset !important;
     height: 100% !important;
     max-height: 100% !important;
@@ -390,109 +398,117 @@
     gap: 0.5rem !important;
   }
   
+  body.game-arena-active .upper-game-zone {
+    flex: 1 1 0% !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.25rem !important;
+  }
+  
   /* Restrict upper zone game table felt height */
-  .flex-1.flex.flex-col.relative.w-full.poker-table-bg {
+  body.game-arena-active .flex-1.flex.flex-col.relative.w-full.poker-table-bg {
     aspect-ratio: unset !important;
-    max-height: 48% !important;
+    max-height: 100% !important;
     min-height: unset !important;
     flex: 1 1 0% !important;
     border-radius: 1rem !important;
   }
 
   /* Shrink circular seating arrangement positions */
-  .absolute.-translate-x-1\/2.-translate-y-1\/2.flex.flex-col {
+  body.game-arena-active .absolute.-translate-x-1\/2.-translate-y-1\/2.flex.flex-col {
     transform: translate(-50%, -50%) scale(0.65) !important;
   }
 
   /* Shrink miniature card back deck fan size */
-  .pointer-events-none.z-0.flex.items-center.justify-center {
+  body.game-arena-active .pointer-events-none.z-0.flex.items-center.justify-center {
     transform: translate(var(--tw-translate-x), var(--tw-translate-y)) scale(0.65) !important;
   }
 
   /* Compact the bottom player hand container */
-  .player-hand-container {
+  body.game-arena-active .player-hand-container {
     padding: 0.25rem 0.5rem !important;
     margin-top: 0px !important;
     border-radius: 1rem !important;
   }
 
   /* Hide header on mobile landscape to save precious vertical space */
-  header.p-4.bg-black\/60 {
+  body.game-arena-active header.p-4.bg-black\/60 {
     display: none !important;
   }
 
   /* Play card action button adjustments */
-  .btn-gold {
+  body.game-arena-active .btn-gold {
     padding: 0.25rem 1rem !important;
     font-size: 10px !important;
     margin-bottom: 0.25rem !important;
   }
 
-  .active-turn-screen-glow {
+  body.game-arena-active .active-turn-screen-glow {
     border-width: 2px !important;
   }
 
   /* Miniaturize cards list spacing */
-  .h-36, .sm\:h-44, .md\:h-48 {
+  body.game-arena-active .h-36, body.game-arena-active .sm\:h-44, body.game-arena-active .md\:h-48 {
     height: 85px !important;
     margin-top: 0px !important;
   }
   
-  .flex-row.justify-center.items-end.px-4.pt-12.pb-4 {
+  body.game-arena-active .flex-row.justify-center.items-end.px-4.pt-12.pb-4 {
     padding-top: 0.5rem !important;
     padding-bottom: 0.125rem !important;
   }
 
   /* Compact hand utility bar overrides */
-  .w-full.max-w-lg.px-4.flex.justify-between.items-center.mb-4 {
+  body.game-arena-active .w-full.max-w-lg.px-4.flex.justify-between.items-center.mb-4 {
     margin-bottom: 0.25rem !important;
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;
   }
   
-  .w-full.max-w-lg.px-4.flex.justify-between.items-center.mb-4 button {
+  body.game-arena-active .w-full.max-w-lg.px-4.flex.justify-between.items-center.mb-4 button {
     padding: 0.125rem 0.5rem !important;
     font-size: 7px !important;
   }
 
   /* Scale down individual card dimensions inside fanned hands */
-  .card-container {
+  body.game-arena-active .card-container {
     width: 48px !important;
     height: 76px !important;
     border-radius: 8px !important;
   }
 
-  .card-container .text-xs, 
-  .card-container .sm\:text-sm,
-  .card-container .md\:text-lg,
-  .card-container .lg\:text-xl {
+  body.game-arena-active .card-container .text-xs, 
+  body.game-arena-active .card-container .sm\:text-sm,
+  body.game-arena-active .card-container .md\:text-lg,
+  body.game-arena-active .card-container .lg\:text-xl {
     font-size: 8px !important;
   }
   
-  .card-container .text-\[9px\],
-  .card-container .sm\:text-xs,
-  .card-container .md\:text-sm {
+  body.game-arena-active .card-container .text-\[9px\],
+  body.game-arena-active .card-container .sm\:text-xs,
+  body.game-arena-active .card-container .md\:text-sm {
     font-size: 7px !important;
   }
 
-  .card-container .text-2xl,
-  .card-container .sm\:text-4xl,
-  .card-container .md\:text-5xl,
-  .card-container .lg\:text-6xl {
+  body.game-arena-active .card-container .text-2xl,
+  body.game-arena-active .card-container .sm\:text-4xl,
+  body.game-arena-active .card-container .md\:text-5xl,
+  body.game-arena-active .card-container .lg\:text-6xl {
     font-size: 16px !important;
   }
 
-  .card-container .top-1 {
+  body.game-arena-active .card-container .top-1 {
     top: 2px !important;
     left: 4px !important;
   }
-  .card-container .bottom-1 {
+  body.game-arena-active .card-container .bottom-1 {
     bottom: 2px !important;
     right: 4px !important;
   }
 
   /* Compact Lobby Panel components side-by-side */
-  .w-full.max-w-5xl.grid {
+  body.game-arena-active .w-full.max-w-5xl.grid {
     max-height: 100% !important;
     height: 100% !important;
     gap: 0.5rem !important;
@@ -501,46 +517,46 @@
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
   
-  .w-full.max-w-5xl.grid .lg\:col-span-2 {
+  body.game-arena-active .w-full.max-w-5xl.grid .lg\:col-span-2 {
     grid-column: span 2 / span 2 !important;
   }
 
-  .w-full.max-w-5xl.grid .glass-card.p-6 {
+  body.game-arena-active .w-full.max-w-5xl.grid .glass-card.p-6 {
     padding: 0.5rem 1rem !important;
   }
   
-  .w-full.max-w-5xl.grid .glass-card.p-5 {
+  body.game-arena-active .w-full.max-w-5xl.grid .glass-card.p-5 {
     padding: 0.5rem !important;
   }
   
-  .w-full.max-w-5xl.grid .w-14.h-14 {
+  body.game-arena-active .w-full.max-w-5xl.grid .w-14.h-14 {
     width: 2.5rem !important;
     height: 2.5rem !important;
     font-size: 1.25rem !important;
   }
 
-  .w-full.max-w-5xl.grid .h-\[96px\] {
+  body.game-arena-active .w-full.max-w-5xl.grid .h-\[96px\] {
     height: 60px !important;
     padding: 0.5rem !important;
   }
 
-  .grid.grid-cols-1.md\:grid-cols-2.gap-4.flex-1 {
+  body.game-arena-active .grid.grid-cols-1.md\:grid-cols-2.gap-4.flex-1 {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     display: grid !important;
     gap: 0.25rem !important;
   }
 
-  .lobby-chat-container {
+  body.game-arena-active .lobby-chat-container {
     height: 100% !important;
     max-height: 100% !important;
     grid-column: span 1 / span 1 !important;
   }
 
-  .flex.gap-4 {
+  body.game-arena-active .flex.gap-4 {
     margin-top: 0.25rem !important;
   }
 
-  .flex.gap-4 button {
+  body.game-arena-active .flex.gap-4 button {
     padding-top: 0.5rem !important;
     padding-bottom: 0.5rem !important;
     font-size: 10px !important;
@@ -548,16 +564,16 @@
   }
 
   /* Compact dashboard layout side-by-side */
-  .min-h-screen.w-full.bg-radial-dark {
+  body.game-arena-active .min-h-screen.w-full.bg-radial-dark {
     padding: 0.5rem !important;
     justify-content: space-around !important;
   }
 
-  .min-h-screen.w-full.bg-radial-dark header {
+  body.game-arena-active .min-h-screen.w-full.bg-radial-dark header {
     margin-bottom: 0.25rem !important;
   }
 
-  .min-h-screen.w-full.bg-radial-dark main {
+  body.game-arena-active .min-h-screen.w-full.bg-radial-dark main {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     display: grid !important;
     gap: 1rem !important;
@@ -566,7 +582,7 @@
     align-items: center !important;
   }
 
-  .min-h-screen.w-full.bg-radial-dark footer {
+  body.game-arena-active .min-h-screen.w-full.bg-radial-dark footer {
     padding-top: 0.25rem !important;
     padding-bottom: 0.25rem !important;
     margin-top: 0.25rem !important;

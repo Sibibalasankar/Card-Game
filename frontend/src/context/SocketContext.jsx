@@ -206,6 +206,7 @@ export const SocketProvider = ({ children }) => {
       hand,
       timerRemaining,
       roundResultAlert,
+      setRoundResultAlert,
       errorNotification,
       floatingEmojis,
       gameOverData,
